@@ -1,7 +1,7 @@
 #ifndef JOS_INC_X86_H
 #define JOS_INC_X86_H
 
-#include <types.h>
+#include <stdint.h>
 
 static __inline void breakpoint(void) __attribute__((always_inline));
 
@@ -230,14 +230,15 @@ lcr4(uint32_t val)
 static __inline uint32_t
 rcr4(void)
 {
-    uint32_t cr4;static __inline uint8_t
-inb(int port)
-{
-  //read a byte from port
-    uint8_t data;
-    __asm __volatile("inb %w1,%0" : "=a" (data) : "d" (port));
-    return data;
-}
+    uint32_t cr4;
+    /*static __inline uint8_t
+    inb(int port)
+    {
+      //read a byte from port
+        uint8_t data;
+        __asm __volatile("inb %w1,%0" : "=a" (data) : "d" (port));
+        return data;
+    }*/
     __asm __volatile("movl %%cr4,%0" : "=r" (cr4));
     return cr4;
 }
