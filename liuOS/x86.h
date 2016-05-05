@@ -299,7 +299,7 @@ static __inline uint32_t
 read_eflags(void)
 {
         uint32_t eflags;
-        __asm __volatile("pushfl; popl %0" : "=r" (eflags));
+        __asm__ __volatile("pushfl; popl %0" : "=r" (eflags));
         return eflags;
 }
 
@@ -308,4 +308,6 @@ write_eflags(uint32_t eflags)
 {
         __asm __volatile("pushl %0; popfl" : : "r" (eflags));
 }
-#endif /* !JOS_INC_X86_H */
+
+#endif 
+/* !JOS_INC_X86_H */

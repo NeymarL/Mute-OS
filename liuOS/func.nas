@@ -13,6 +13,8 @@
 ; 以下是实际函数
 
 _io_hlt:                ; void io_hlt(void);
+        MOV     AH, 0x00
+        INT     0x10
         HLT
         RET
 

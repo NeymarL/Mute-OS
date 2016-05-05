@@ -1,7 +1,13 @@
 ; ipl
 ; TAB=4
 
-CYLS    EQU     10
+CYL     EQU     10
+CYLS    EQU     0x0ff0
+LEDS    EQU     0x0ff1
+VMODE   EQU     0x0ff2      ; 颜色的位数
+SCRNX   EQU     0x0ff4      ; 分辨率的X
+SCRNY   EQU     0x0ff6      ; 分辨率的Y
+VRAM    EQU     0x0ff8      ; 图像缓存区的开始地址
 
 start:  ORG     0x7c00      ; 指明程序装载地址
 
@@ -24,7 +30,7 @@ start:  ORG     0x7c00      ; 指明程序装载地址
         DD      2880        ; 重写一次磁盘大小
         DB      0, 0, 0x29      ; 意义不明，固定
         DD      0xffffffff      ; 可能是卷标号码
-        DB      "LIUHE-OS   "   ; 磁盘的名称，11字节
+        DB      "Mute-OS    "   ; 磁盘的名称，11字节
         DB      "FAT12   "      ; 磁盘个是名称，8字节
         RESB    18             ; 先空出18字节
 
@@ -51,14 +57,20 @@ retry:
         MOV     AH, 0x02    ; AH=0x02 : 读盘
         MOV     AL, 1       ; 1个扇区
         MOV     BX, 0
-        MOV     DL, 0x80    ; USB驱动器
+        
+        ;MOV     DL, 0x80    ; USB驱动器
+        MOV     DL, 0x00     ; IN QEMU!!!
+
         INT     0x13        ; 调用磁盘BIOS
         JNC     next        ; 没出错时跳转到next
         ADD     SI, 1       ; SI加一
         CMP     SI, 5       ; 比较SI与5
         JAE     error       ; jump if above or equal
         MOV     AH, 0x00    ;
-        MOV     DL, 0x80    ; USB驱动器
+        
+        ;MOV     DL, 0x80    ; USB驱动器
+        MOV     DL, 0x00     ; IN QEMU!!!
+
         INT     0x13        ; 重置驱动器
         JMP     retry
 next:
@@ -66,21 +78,41 @@ next:
         ADD     AX, 0x0020  ; 通过AX加上0x0020, 相当于将地址后移0x200
         MOV     ES, AX      ; 因为没有 ADD ES, 0x020指令
         ADD     CL, 1       ; sector++
-        CMP     CL, 63      ; cl与63比较
+        
+        ;CMP     CL, 63      ; cl与63比较
+        CMP     CL, 18      ; in QEMU !!!
+
         JBE     readloop    ; jump if below or equal
 
         MOV     CL, 1
         ADD     DH, 1       ; header++
-        CMP     DH, 10
+        
+        ;CMP     DH, 10
+        CMP     DH, 2       ; in QEMU !!!
+
+        JB      readloop
+
+        MOV     DH, 0
+        ADD     CH, 1       ; cylinders++
+        CMP     CH, CYL
         JBE     readloop
 
-        ;MOV     DH, 0
-        ;ADD     CH, 1       ; cylinders++
-        ;CMP     CH, CYLS
-        ;JBE     readloop
-
         ;JMP     sayhello
-        JMP      0x8200
+        MOV     AL, 0x13    ; VGA显卡,320*200*8
+        MOV     AH, 0x00
+        INT     0x10
+        MOV     BYTE [VMODE], 8 ; 记忆画面模式
+        MOV     WORD [SCRNX], 320
+        MOV     WORD [SCRNY], 200
+        MOV     DWORD [VRAM], 0x000a0000
+
+; 用BIOS取得键盘上个种指示灯的状态
+
+        MOV     AH, 0x02
+        INT     0x16
+        MOV     [LEDS], AL
+
+        JMP     0x8200
 
 fin:
         HLT                 ; 让CPU停止，等待指令
@@ -113,7 +145,7 @@ errmsg:
 
 hello:
         DB      0x0a, 0x0a  ; 换行两次
-        DB      "Welcome to LIUHE-OS!"
+        DB      "Welcome to Mute-OS!"
         DB      0x0a
         DB      0
 
