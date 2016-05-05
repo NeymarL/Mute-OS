@@ -6,7 +6,7 @@ NASK     = $(TOOLPATH)nask
 GAS2NASK = $(TOOLPATH)gas2nask -a
 OBJ2BIM  = $(TOOLPATH)obj2bim
 BIM2HRB  = $(TOOLPATH)bim2hrb
-RULEFILE = $(TOOLPATH)haribote/haribote.rul
+RULEFILE = $(INCPATH)haribote.rul
 
 
 # 生成img镜像
@@ -23,21 +23,24 @@ ipl.bin : ipl.nas Makefile
 asmhead.bin : asmhead.nas Makefile
 	$(NASK) asmhead.nas asmhead.bin asmhead.lst
 
-bootpack.gas : bootpack.c Makefile
-	gcc -o bootpack.gas bootpack.c
+#bootpack.gas : bootpack.c Makefile
+#	gcc -o bootpack.gas bootpack.c
 
 bootpack.nas : bootpack.gas Makefile
 	$(GAS2NASK) bootpack.gas bootpack.nas
 
-bootpack.obj : bootpack.nas Makefile
-	$(NASK) bootpack.nas bootpack.obj bootpack.lst
+#bootpack.o : bootpack.nas Makefile
+#	$(NASK) bootpack.nas bootpack.o bootpack.lst
 
-naskfunc.obj : func.nas Makefile
-	$(NASK) func.nas func.obj func.lst
+bootpack.o :
+	gcc -c bootpack.c -o bootpack.o
 
-bootpack.bim : bootpack.obj func.obj Makefile
+naskfunc.o : func.nas Makefile
+	$(NASK) func.nas func.o func.lst
+
+bootpack.bim : bootpack.o func.o Makefile
 	$(OBJ2BIM) @$(RULEFILE) out:bootpack.bim stack:3136k map:bootpack.map \
-		bootpack.obj func.obj
+		bootpack.o func.o
 
 bootpack.hrb : bootpack.bim Makefile
 	$(BIM2HRB) bootpack.bim bootpack.hrb 0

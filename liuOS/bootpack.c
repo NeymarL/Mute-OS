@@ -2,7 +2,7 @@
 /*     main.c    */
 /*****************/
 
-//#include "header.h"
+#include "header.h"
 
 void io_hlt();
 
