@@ -1,0 +1,19 @@
+     1                                  [bits 32]
+     2                                  ;hah:
+     3                                  ;  MOV  eAX,1*8   ;  段偏移量 ，还是在这再初始化一次吧
+     4                                  ;  MOV  DS,AX
+     5                                  ;  MOV  ES,AX
+     6                                  ;  MOV  FS,AX
+     7                                  ;  MOV  SS,AX
+     8                                  ;  mov esp,0x280000;把栈地址放到这把
+     9 00000000 B800000A00                mov eax ,0xa0000
+    10                                  loops:
+    11 00000005 C6000E                    mov byte [eax],14
+    12 00000008 40                        inc eax
+    13 00000009 3DFFFF0A00                cmp eax, 0xaffff
+    14 0000000E 76F5                      jbe loops
+    15 00000010 EB00                      jmp loo
+    16                                    
+    17                                  loo:
+    18 00000012 F4                        hlt
+    19 00000013 EBFD                        jmp loo

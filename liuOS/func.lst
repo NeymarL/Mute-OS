@@ -1,0 +1,37 @@
+     1                                  ; func
+     2                                  ; TAB=4
+     3                                  
+     4                                  ;[FORMAT "WCOFF"]        ; 制作32位目标文件格式
+     5                                  [BITS 32]               ; 制作32位模式用的机器语言
+     6                                  
+     7                                  ; 制作目标文件的信息
+     8                                  
+     9                                  ;[FILE "func.nas"]       ; 源文件名信息
+    10                                  
+    11                                          GLOBAL      io_hlt     ; 程序中包涵的函数名
+    12                                          GLOBAL      test
+    13                                          GLOBAL      write_mem8
+    14                                  
+    15                                  ; 以下是实际函数
+    16                                  
+    17                                  io_hlt:                ; void io_hlt(voi
+    18 00000000 F4                              HLT
+    19 00000001 C3                              RET
+    20                                  
+    21                                  test:
+    22 00000002 B800000A00                MOV   EAX, 0xa0000
+    23 00000007 EB01                      JMP   loops
+    24 00000009 C3                        RET
+    25                                  
+    26                                  loops:
+    27 0000000A C6000E                    MOV   BYTE [EAX],14
+    28 0000000D 40                        INC   EAX
+    29 0000000E 3DFFFF0A00                CMP   EAX, 0xaffff
+    30 00000013 76F5                      JBE   loops
+    31 00000015 C3                        RET
+    32                                  
+    33                                  write_mem8:
+    34 00000016 8B44240C                    MOV     EAX, [ESP + 12]
+    35 0000001A 8A442429                    MOV     AL, [ESP + 41]
+    36 0000001E 8800                        MOV     [EAX], AL
+    37 00000020 C3                          RET

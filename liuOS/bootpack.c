@@ -2,27 +2,24 @@
 /*     main.c    */
 /*****************/
 
-#include "header.h"
+//#include "header.h"
 
+void test();
+void io_hlt();
+void write_mem8(int addr, int data);
 
 int main()
 {
-    int i;
-    // MOV  DWORD [0x0ff8], 0x000a0000
-    // movl $0x000a0000, $0x0ff8
-    __asm__ volatile(
-        "movl $0x000a0000, %ebx\n\t"\
-        "movl $0x0ff8, %edi\n\t"\
-        "movl %ebx, (%edi)"
-    );     
-
+    int i;   
+    //char *p;
     for (i = 0xa0000; i <= 0xaffff; i++){
-        write_mem8(i, (char)(i & 0x0f));
+        write_mem8(i, 14);
         //p = (char*)i;
-        //*p = i & 0x0f;
+        //*p = 14;
     }
-    for (;;){
-        io_halt();
+    //test();
+    while(1){
+        io_hlt();
     }
     return 0;
 }
