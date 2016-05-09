@@ -1,37 +1,88 @@
      1                                  ; func
      2                                  ; TAB=4
      3                                  
-     4                                  ;[FORMAT "WCOFF"]        ; 制作32位目标文件格式
-     5                                  [BITS 32]               ; 制作32位模式用的机器语言
-     6                                  
-     7                                  ; 制作目标文件的信息
-     8                                  
-     9                                  ;[FILE "func.nas"]       ; 源文件名信息
-    10                                  
-    11                                          GLOBAL      io_hlt     ; 程序中包涵的函数名
-    12                                          GLOBAL      test
-    13                                          GLOBAL      write_mem8
-    14                                  
-    15                                  ; 以下是实际函数
-    16                                  
-    17                                  io_hlt:                ; void io_hlt(voi
-    18 00000000 F4                              HLT
-    19 00000001 C3                              RET
-    20                                  
-    21                                  test:
-    22 00000002 B800000A00                MOV   EAX, 0xa0000
-    23 00000007 EB01                      JMP   loops
-    24 00000009 C3                        RET
-    25                                  
-    26                                  loops:
-    27 0000000A C6000E                    MOV   BYTE [EAX],14
-    28 0000000D 40                        INC   EAX
-    29 0000000E 3DFFFF0A00                CMP   EAX, 0xaffff
-    30 00000013 76F5                      JBE   loops
-    31 00000015 C3                        RET
-    32                                  
-    33                                  write_mem8:
-    34 00000016 8B44240C                    MOV     EAX, [ESP + 12]
-    35 0000001A 8A442429                    MOV     AL, [ESP + 41]
-    36 0000001E 8800                        MOV     [EAX], AL
-    37 00000020 C3                          RET
+     4                                  [BITS 32]               ; 制作32位模式用的机器语言
+     5                                  
+     6                                          GLOBAL      io_hlt, io_cli, io_sti, io_stihlt  
+     7                                          GLOBAL      write_mem8
+     8                                          GLOBAL      io_in8, io_in16, io_in32
+     9                                          GLOBAL      io_out8, io_out16, io_out32
+    10                                          GLOBAL      io_load_eflags, io_store_eflags
+    11                                  
+    12                                  ; 以下是实际函数
+    13                                  
+    14                                  io_hlt:     ; void io_hlt();
+    15 00000000 F4                          HLT
+    16 00000001 C3                          RET
+    17                                  
+    18                                  write_mem8: ; void write_mem8(int addr, int data);
+    19 00000002 89F9                        MOV     ECX, EDI
+    20 00000004 B800000000                  MOV     EAX, 0
+    21 00000009 6689F0                      MOV     AX, SI
+    22                                      ;MOV     ECX, [EBP + 8]
+    23                                      ;MOV     EAX, [EBP + 12]
+    24 0000000C 8801                        MOV     [ECX], AL
+    25 0000000E C3                          RET
+    26                                  
+    27                                  io_cli:     ; void io_cli();
+    28 0000000F FA                          CLI 
+    29 00000010 C3                          RET
+    30                                  
+    31                                  io_sti:     ; void io_sti();
+    32 00000011 FB                          STI 
+    33 00000012 C3                          RET
+    34                                  
+    35                                  io_stihlt:  ; void io_stihlt();
+    36 00000013 FB                          STI 
+    37 00000014 F4                          HLT 
+    38 00000015 C3                          RET
+    39                                  
+    40                                  io_in8:     ; int io_in8(int port);
+    41 00000016 89FA                        MOV     EDX, EDI ; port
+    42 00000018 B800000000                  MOV     EAX, 0
+    43 0000001D EC                          IN      AL, DX
+    44 0000001E C3                          RET
+    45                                  
+    46                                  io_in16:    ; int io_in16(int port);
+    47 0000001F 89FA                        MOV     EDX, EDI ; port
+    48 00000021 B800000000                  MOV     EAX, 0
+    49 00000026 66ED                        IN      AX, DX
+    50 00000028 C3                          RET             ; 执行RET语句时，EAX的值就被看作是函数的返回值
+    51                                  
+    52                                  io_in32:    ; int io_in32(int port);
+    53 00000029 89FA                        MOV     EDX, EDI ; port
+    54 0000002B ED                          IN      EAX, DX
+    55 0000002C C3                          RET
+    56                                  
+    57                                  io_out8:   ; void io_out8(int port, int data);
+    58 0000002D 89FA                        MOV     EDX, EDI ; port
+    59 0000002F B800000000                  MOV     EAX, 0
+    60 00000034 6689F0                      MOV     AX, SI          ; data
+    61 00000037 66EF                        OUT     DX, AX
+    62 00000039 C3                          RET
+    63                                  
+    64                                  io_out16:   ; void io_out16(int port, int data);
+    65 0000003A 89FA                        MOV     EDX, EDI ; port
+    66 0000003C B800000000                  MOV     EAX, 0
+    67 00000041 6689F0                      MOV     AX, SI          ; data
+    68 00000044 66EF                        OUT     DX, AX
+    69 00000046 C3                          RET
+    70                                  
+    71                                  io_out32:   ; void io_out32(int port, int data);
+    72 00000047 89FA                        MOV     EDX, EDI ; port
+    73 00000049 B800000000                  MOV     EAX, 0
+    74 0000004E 89F0                        MOV     EAX, ESI        ; data
+    75 00000050 EF                          OUT     DX, EAX
+    76 00000051 C3                          RET
+    77                                  
+    78                                  io_load_eflags: ; int io_load_eflags();
+    79 00000052 9C                          PUSHFD      ; push flags double word
+    80 00000053 58                          POP     EAX
+    81 00000054 C3                          RET
+    82                                  
+    83                                  io_store_eflags:    ; void io_store_eflags();
+    84 00000055 89F8                        MOV     EAX, EDI
+    85 00000057 50                          PUSH    EAX
+    86 00000058 9D                          POPFD           ; pop flags double word
+    87 00000059 C3                          RET
+    88                                  
