@@ -1,137 +1,192 @@
 
-bootpack.o：     文件格式 elf64-x86-64
+screen.o：     文件格式 elf64-x86-64
 
 
 Disassembly of section .text:
 
-0000000000000000 <main>:
+0000000000000000 <draw_rect>:
    0:	55                   	push   %rbp
    1:	48 89 e5             	mov    %rsp,%rbp
-   4:	48 83 ec 10          	sub    $0x10,%rsp
-   8:	c7 45 fc 00 00 0a 00 	movl   $0xa0000,-0x4(%rbp)
-   f:	c7 45 f8 06 00 00 00 	movl   $0x6,-0x8(%rbp)
-  16:	8b 45 fc             	mov    -0x4(%rbp),%eax
-  19:	48 83 ec 08          	sub    $0x8,%rsp
-  1d:	68 96 00 00 00       	pushq  $0x96  ; y1
-  22:	41 b9 aa 00 00 00    	mov    $0xaa,%r9d
-  28:	41 b8 32 00 00 00    	mov    $0x32,%r8d ;y0
-  2e:	b9 46 00 00 00       	mov    $0x46,%ecx
-  33:	ba 02 00 00 00       	mov    $0x2,%edx
-  38:	be 40 01 00 00       	mov    $0x140,%esi
-  3d:	89 c7                	mov    %eax,%edi
-  3f:	e8 00 00 00 00       	callq  44 <main+0x44>
-  44:	48 83 c4 10          	add    $0x10,%rsp
-  48:	b8 00 00 00 00       	mov    $0x0,%eax
-  4d:	e8 00 00 00 00       	callq  52 <main+0x52>
-  52:	eb f4                	jmp    48 <main+0x48>
+   4:	48 83 ec 30          	sub    $0x30,%rsp
+   8:	89 7d ec             	mov    %edi,-0x14(%rbp)
+   b:	89 75 e8             	mov    %esi,-0x18(%rbp)
+   e:	89 55 e4             	mov    %edx,-0x1c(%rbp)
+  11:	89 4d e0             	mov    %ecx,-0x20(%rbp)
+  14:	44 89 45 dc          	mov    %r8d,-0x24(%rbp)
+  18:	c7 45 f4 00 00 0a 00 	movl   $0xa0000,-0xc(%rbp)
+  1f:	c7 45 f0 40 01 00 00 	movl   $0x140,-0x10(%rbp)
+  26:	8b 45 e4             	mov    -0x1c(%rbp),%eax
+  29:	89 45 fc             	mov    %eax,-0x4(%rbp)
+  2c:	eb 35                	jmp    63 <draw_rect+0x63>
+  2e:	8b 45 e8             	mov    -0x18(%rbp),%eax
+  31:	89 45 f8             	mov    %eax,-0x8(%rbp)
+  34:	eb 21                	jmp    57 <draw_rect+0x57>
+  36:	8b 55 f4             	mov    -0xc(%rbp),%edx
+  39:	8b 45 f8             	mov    -0x8(%rbp),%eax
+  3c:	01 c2                	add    %eax,%edx
+  3e:	8b 45 fc             	mov    -0x4(%rbp),%eax
+  41:	0f af 45 f0          	imul   -0x10(%rbp),%eax
+  45:	01 c2                	add    %eax,%edx
+  47:	8b 45 ec             	mov    -0x14(%rbp),%eax
+  4a:	89 c6                	mov    %eax,%esi
+  4c:	89 d7                	mov    %edx,%edi
+  4e:	e8 00 00 00 00       	callq  53 <draw_rect+0x53>
+  53:	83 45 f8 01          	addl   $0x1,-0x8(%rbp)
+  57:	8b 45 f8             	mov    -0x8(%rbp),%eax
+  5a:	3b 45 e0             	cmp    -0x20(%rbp),%eax
+  5d:	7e d7                	jle    36 <draw_rect+0x36>
+  5f:	83 45 fc 01          	addl   $0x1,-0x4(%rbp)
+  63:	8b 45 fc             	mov    -0x4(%rbp),%eax
+  66:	3b 45 dc             	cmp    -0x24(%rbp),%eax
+  69:	7e c3                	jle    2e <draw_rect+0x2e>
+  6b:	90                   	nop
+  6c:	c9                   	leaveq 
+  6d:	c3                   	retq   
 
-0000000000000054 <boxfill8>:
-  54:	55                   	push   %rbp
-  55:	48 89 e5             	mov    %rsp,%rbp
-  58:	48 83 ec 30          	sub    $0x30,%rsp
-  5c:	89 7d ec             	mov    %edi,-0x14(%rbp)
-  5f:	89 75 e8             	mov    %esi,-0x18(%rbp)
-  62:	89 d0                	mov    %edx,%eax
-  64:	89 4d e0             	mov    %ecx,-0x20(%rbp) ; x0
-  67:	44 89 45 dc          	mov    %r8d,-0x24(%rbp) ; y0
-  6b:	44 89 4d d8          	mov    %r9d,-0x28(%rbp) ; x1 = 170
-  6f:	88 45 e4             	mov    %al,-0x1c(%rbp)
-  72:	8b 45 dc             	mov    -0x24(%rbp),%eax ; y1 
-  75:	89 45 f8             	mov    %eax,-0x8(%rbp)
-  78:	eb 36                	jmp    b0 <boxfill8+0x5c>
+000000000000006e <draw_string>:
+  6e:	55                   	push   %rbp
+  6f:	48 89 e5             	mov    %rsp,%rbp
+  72:	48 83 ec 20          	sub    $0x20,%rsp
+  76:	48 89 7d f8          	mov    %rdi,-0x8(%rbp)
+  7a:	89 75 f4             	mov    %esi,-0xc(%rbp)
+  7d:	89 55 f0             	mov    %edx,-0x10(%rbp)
+  80:	89 4d ec             	mov    %ecx,-0x14(%rbp)
+  83:	eb 23                	jmp    a8 <draw_string+0x3a>
+  85:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+  89:	0f b6 00             	movzbl (%rax),%eax
+  8c:	0f be c8             	movsbl %al,%ecx
+  8f:	8b 55 f0             	mov    -0x10(%rbp),%edx
+  92:	8b 75 f4             	mov    -0xc(%rbp),%esi
+  95:	8b 45 ec             	mov    -0x14(%rbp),%eax
+  98:	89 c7                	mov    %eax,%edi
+  9a:	e8 00 00 00 00       	callq  9f <draw_string+0x31>
+  9f:	83 45 f4 08          	addl   $0x8,-0xc(%rbp)
+  a3:	48 83 45 f8 01       	addq   $0x1,-0x8(%rbp)
+  a8:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+  ac:	0f b6 00             	movzbl (%rax),%eax
+  af:	84 c0                	test   %al,%al
+  b1:	75 d2                	jne    85 <draw_string+0x17>
+  b3:	90                   	nop
+  b4:	c9                   	leaveq 
+  b5:	c3                   	retq   
 
-  7a:	8b 45 e0             	mov    -0x20(%rbp),%eax ; x0 = 70
-  7d:	89 45 fc             	mov    %eax,-0x4(%rbp)  ; x
-  80:	eb 22                	jmp    a4 <boxfill8+0x50>
-  82:	0f b6 45 e4          	movzbl -0x1c(%rbp),%eax
-  86:	8b 4d ec             	mov    -0x14(%rbp),%ecx
-  89:	8b 55 fc             	mov    -0x4(%rbp),%edx
+00000000000000b6 <draw_font>:
+  b6:	55                   	push   %rbp
+  b7:	48 89 e5             	mov    %rsp,%rbp
+  ba:	48 83 ec 20          	sub    $0x20,%rsp
+  be:	89 7d ec             	mov    %edi,-0x14(%rbp)
+  c1:	89 75 e8             	mov    %esi,-0x18(%rbp)
+  c4:	89 55 e4             	mov    %edx,-0x1c(%rbp)
+  c7:	89 c8                	mov    %ecx,%eax
+  c9:	88 45 e0             	mov    %al,-0x20(%rbp)
+  cc:	c7 45 fc 00 00 00 00 	movl   $0x0,-0x4(%rbp)
+  d3:	eb 78                	jmp    14d <draw_font+0x97>
+  d5:	c7 45 f8 00 00 00 00 	movl   $0x0,-0x8(%rbp)
+  dc:	eb 65                	jmp    143 <draw_font+0x8d>
+  
+  de:	0f be 45 e0          	movsbl -0x20(%rbp),%eax
+  e2:	8b 55 fc             	mov    -0x4(%rbp),%edx
+  e5:	8d 0c d5 00 00 00 00 	lea    0x0(,%rdx,8),%ecx
+  ec:	8b 55 f8             	mov    -0x8(%rbp),%edx
+  ef:	01 ca                	add    %ecx,%edx
+  f1:	48 63 ca             	movslq %edx,%rcx
+  f4:	48 63 d0             	movslq %eax,%rdx
+  f7:	48 89 d0             	mov    %rdx,%rax
+  fa:	48 c1 e0 07          	shl    $0x7,%rax
+  fe:	48 01 d0             	add    %rdx,%rax
+ 101:	48 01 c8             	add    %rcx,%rax
+ 104:	48 05 00 00 00 00    	add    $0x0,%rax
+ 10a:	0f b6 00             	movzbl (%rax),%eax
+ 10d:	3c 2a                	cmp    $0x2a,%al
+ 10f:	75 2e                	jne    13f <draw_font+0x89>
 
-  8c:	01 d1                	add    %edx,%ecx
-  8e:	8b 55 f8             	mov    -0x8(%rbp),%edx
-  91:	0f af 55 e8          	imul   -0x18(%rbp),%edx
-  95:	01 ca                	add    %ecx,%edx
+ 111:	8b 55 e8             	mov    -0x18(%rbp),%edx
+ 114:	8b 45 fc             	mov    -0x4(%rbp),%eax
+ 117:	01 c2                	add    %eax,%edx
+ 119:	89 d0                	mov    %edx,%eax
+ 11b:	c1 e0 02             	shl    $0x2,%eax
+ 11e:	01 d0                	add    %edx,%eax
+ 120:	c1 e0 06             	shl    $0x6,%eax
+ 123:	8d 90 00 00 0a 00    	lea    0xa0000(%rax),%edx
+ 129:	8b 45 ec             	mov    -0x14(%rbp),%eax
+ 12c:	01 c2                	add    %eax,%edx
+ 12e:	8b 45 f8             	mov    -0x8(%rbp),%eax
+ 131:	01 c2                	add    %eax,%edx
+ 133:	8b 45 e4             	mov    -0x1c(%rbp),%eax
+ 136:	89 c6                	mov    %eax,%esi
+ 138:	89 d7                	mov    %edx,%edi
+ 13a:	e8 00 00 00 00       	callq  13f <draw_font+0x89>
+ 13f:	83 45 f8 01          	addl   $0x1,-0x8(%rbp)
+ 143:	83 7d f8 07          	cmpl   $0x7,-0x8(%rbp)
+ 147:	7e 95                	jle    de <draw_font+0x28>
+ 149:	83 45 fc 01          	addl   $0x1,-0x4(%rbp)
+ 14d:	83 7d fc 0f          	cmpl   $0xf,-0x4(%rbp)
+ 151:	7e 82                	jle    d5 <draw_font+0x1f>
+ 153:	90                   	nop
+ 154:	c9                   	leaveq 
+ 155:	c3                   	retq   
 
-  97:	89 c6                	mov    %eax,%esi
-  99:	89 d7                	mov    %edx,%edi
-  9b:	e8 00 00 00 00       	callq  a0 <boxfill8+0x4c>
+0000000000000156 <init_palette>:
+ 156:	55                   	push   %rbp
+ 157:	48 89 e5             	mov    %rsp,%rbp
+ 15a:	ba 00 00 00 00       	mov    $0x0,%edx
+ 15f:	be 0f 00 00 00       	mov    $0xf,%esi
+ 164:	bf 00 00 00 00       	mov    $0x0,%edi
+ 169:	e8 00 00 00 00       	callq  16e <init_palette+0x18>
+ 16e:	90                   	nop
+ 16f:	5d                   	pop    %rbp
+ 170:	c3                   	retq   
 
-  a0:	83 45 fc 01          	addl   $0x1,-0x4(%rbp)
-  a4:	8b 45 fc             	mov    -0x4(%rbp),%eax
-  a7:	3b 45 d8             	cmp    -0x28(%rbp),%eax ; x <= x1 ?
-  aa:	7e d6                	jle    82 <boxfill8+0x2e>
-  ac:	83 45 f8 01          	addl   $0x1,-0x8(%rbp)
-  b0:	8b 45 f8             	mov    -0x8(%rbp),%eax
-  b3:	3b 45 10             	cmp    0x10(%rbp),%eax
-  b6:	7e c2                	jle    7a <boxfill8+0x26>
-
-  b8:	90                   	nop
-  b9:	c9                   	leaveq 
-  ba:	c3                   	retq   
-
-00000000000000bb <init_palette>:
-  bb:	55                   	push   %rbp
-  bc:	48 89 e5             	mov    %rsp,%rbp
-  bf:	ba 00 00 00 00       	mov    $0x0,%edx
-  c4:	be 0f 00 00 00       	mov    $0xf,%esi
-  c9:	bf 00 00 00 00       	mov    $0x0,%edi
-  ce:	e8 00 00 00 00       	callq  d3 <init_palette+0x18>
-  d3:	90                   	nop
-  d4:	5d                   	pop    %rbp
-  d5:	c3                   	retq   
-
-00000000000000d6 <set_palette>:
-  d6:	55                   	push   %rbp
-  d7:	48 89 e5             	mov    %rsp,%rbp
-  da:	48 83 ec 20          	sub    $0x20,%rsp
-  de:	89 7d ec             	mov    %edi,-0x14(%rbp)
-  e1:	89 75 e8             	mov    %esi,-0x18(%rbp)
-  e4:	48 89 55 e0          	mov    %rdx,-0x20(%rbp)
-  e8:	b8 00 00 00 00       	mov    $0x0,%eax
-  ed:	e8 00 00 00 00       	callq  f2 <set_palette+0x1c>
-  f2:	89 45 f8             	mov    %eax,-0x8(%rbp)
-  f5:	b8 00 00 00 00       	mov    $0x0,%eax
-  fa:	e8 00 00 00 00       	callq  ff <set_palette+0x29>
-  ff:	8b 45 ec             	mov    -0x14(%rbp),%eax
- 102:	89 c6                	mov    %eax,%esi
- 104:	bf c8 03 00 00       	mov    $0x3c8,%edi
- 109:	e8 00 00 00 00       	callq  10e <set_palette+0x38>
- 10e:	8b 45 ec             	mov    -0x14(%rbp),%eax
- 111:	89 45 fc             	mov    %eax,-0x4(%rbp)
-
- 114:	eb 5c                	jmp    172 <set_palette+0x9c>
- 116:	48 8b 45 e0          	mov    -0x20(%rbp),%rax
- 11a:	0f b6 00             	movzbl (%rax),%eax
- 11d:	c0 e8 02             	shr    $0x2,%al
- 120:	0f b6 c0             	movzbl %al,%eax
- 123:	89 c6                	mov    %eax,%esi
- 125:	bf c9 03 00 00       	mov    $0x3c9,%edi
- 12a:	e8 00 00 00 00       	callq  12f <set_palette+0x59>
- 12f:	48 8b 45 e0          	mov    -0x20(%rbp),%rax
- 133:	48 83 c0 01          	add    $0x1,%rax
- 137:	0f b6 00             	movzbl (%rax),%eax
- 13a:	c0 e8 02             	shr    $0x2,%al
- 13d:	0f b6 c0             	movzbl %al,%eax
- 140:	89 c6                	mov    %eax,%esi
- 142:	bf c9 03 00 00       	mov    $0x3c9,%edi
- 147:	e8 00 00 00 00       	callq  14c <set_palette+0x76>
- 14c:	48 8b 45 e0          	mov    -0x20(%rbp),%rax
- 150:	48 83 c0 02          	add    $0x2,%rax
- 154:	0f b6 00             	movzbl (%rax),%eax
- 157:	c0 e8 02             	shr    $0x2,%al
- 15a:	0f b6 c0             	movzbl %al,%eax
- 15d:	89 c6                	mov    %eax,%esi
- 15f:	bf c9 03 00 00       	mov    $0x3c9,%edi
- 164:	e8 00 00 00 00       	callq  169 <set_palette+0x93>
- 169:	48 83 45 e0 03       	addq   $0x3,-0x20(%rbp)
- 16e:	83 45 fc 01          	addl   $0x1,-0x4(%rbp)
-
- 172:	8b 45 fc             	mov    -0x4(%rbp),%eax
- 175:	3b 45 e8             	cmp    -0x18(%rbp),%eax
- 178:	7e 9c                	jle    116 <set_palette+0x40>
- 17a:	8b 45 f8             	mov    -0x8(%rbp),%eax
- 17d:	89 c7                	mov    %eax,%edi
- 17f:	e8 00 00 00 00       	callq  184 <set_palette+0xae>
- 184:	90                   	nop
- 185:	c9                   	leaveq 
- 186:	c3                   	retq   
+0000000000000171 <set_palette>:
+ 171:	55                   	push   %rbp
+ 172:	48 89 e5             	mov    %rsp,%rbp
+ 175:	48 83 ec 20          	sub    $0x20,%rsp
+ 179:	89 7d ec             	mov    %edi,-0x14(%rbp)
+ 17c:	89 75 e8             	mov    %esi,-0x18(%rbp)
+ 17f:	48 89 55 e0          	mov    %rdx,-0x20(%rbp)
+ 183:	b8 00 00 00 00       	mov    $0x0,%eax
+ 188:	e8 00 00 00 00       	callq  18d <set_palette+0x1c>
+ 18d:	89 45 f8             	mov    %eax,-0x8(%rbp)
+ 190:	b8 00 00 00 00       	mov    $0x0,%eax
+ 195:	e8 00 00 00 00       	callq  19a <set_palette+0x29>
+ 19a:	8b 45 ec             	mov    -0x14(%rbp),%eax
+ 19d:	89 c6                	mov    %eax,%esi
+ 19f:	bf c8 03 00 00       	mov    $0x3c8,%edi
+ 1a4:	e8 00 00 00 00       	callq  1a9 <set_palette+0x38>
+ 1a9:	8b 45 ec             	mov    -0x14(%rbp),%eax
+ 1ac:	89 45 fc             	mov    %eax,-0x4(%rbp)
+ 1af:	eb 5c                	jmp    20d <set_palette+0x9c>
+ 1b1:	48 8b 45 e0          	mov    -0x20(%rbp),%rax
+ 1b5:	0f b6 00             	movzbl (%rax),%eax
+ 1b8:	c0 e8 04             	shr    $0x4,%al
+ 1bb:	0f b6 c0             	movzbl %al,%eax
+ 1be:	89 c6                	mov    %eax,%esi
+ 1c0:	bf c9 03 00 00       	mov    $0x3c9,%edi
+ 1c5:	e8 00 00 00 00       	callq  1ca <set_palette+0x59>
+ 1ca:	48 8b 45 e0          	mov    -0x20(%rbp),%rax
+ 1ce:	48 83 c0 01          	add    $0x1,%rax
+ 1d2:	0f b6 00             	movzbl (%rax),%eax
+ 1d5:	c0 e8 04             	shr    $0x4,%al
+ 1d8:	0f b6 c0             	movzbl %al,%eax
+ 1db:	89 c6                	mov    %eax,%esi
+ 1dd:	bf c9 03 00 00       	mov    $0x3c9,%edi
+ 1e2:	e8 00 00 00 00       	callq  1e7 <set_palette+0x76>
+ 1e7:	48 8b 45 e0          	mov    -0x20(%rbp),%rax
+ 1eb:	48 83 c0 02          	add    $0x2,%rax
+ 1ef:	0f b6 00             	movzbl (%rax),%eax
+ 1f2:	c0 e8 04             	shr    $0x4,%al
+ 1f5:	0f b6 c0             	movzbl %al,%eax
+ 1f8:	89 c6                	mov    %eax,%esi
+ 1fa:	bf c9 03 00 00       	mov    $0x3c9,%edi
+ 1ff:	e8 00 00 00 00       	callq  204 <set_palette+0x93>
+ 204:	48 83 45 e0 03       	addq   $0x3,-0x20(%rbp)
+ 209:	83 45 fc 01          	addl   $0x1,-0x4(%rbp)
+ 20d:	8b 45 fc             	mov    -0x4(%rbp),%eax
+ 210:	3b 45 e8             	cmp    -0x18(%rbp),%eax
+ 213:	7e 9c                	jle    1b1 <set_palette+0x40>
+ 215:	8b 45 f8             	mov    -0x8(%rbp),%eax
+ 218:	89 c7                	mov    %eax,%edi
+ 21a:	e8 00 00 00 00       	callq  21f <set_palette+0xae>
+ 21f:	90                   	nop
+ 220:	c9                   	leaveq 
+ 221:	c3                   	retq   

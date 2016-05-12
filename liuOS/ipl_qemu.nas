@@ -1,7 +1,7 @@
 ; ipl
 ; TAB=4
 
-CYL     EQU     10
+CYL     EQU     24
 
 start:  ORG     0x7c00      ; 指明程序装载地址
 
@@ -43,8 +43,6 @@ entry:
         MOV     DH, 0       ; 磁头0
         MOV     CL, 2       ; 扇区2
 
-        JMP     sayhello
-
 readloop:
         MOV     SI, 0       ; 记录失败次数
 
@@ -54,8 +52,8 @@ retry:
         MOV     AL, 1       ; 1个扇区
         MOV     BX, 0
         
-        MOV     DL, 0x80    ; USB驱动器
-        ;MOV     DL, 0x00     ; IN QEMU!!!
+        ;MOV     DL, 0x80    ; USB驱动器
+        MOV     DL, 0x00     ; IN QEMU!!!
 
         INT     0x13        ; 调用磁盘BIOS
         JNC     next        ; 没出错时跳转到next
@@ -64,8 +62,8 @@ retry:
         JAE     error       ; jump if above or equal
         MOV     AH, 0x00    ;
         
-        MOV     DL, 0x80    ; USB驱动器
-        ;MOV     DL, 0x00     ; IN QEMU!!!
+        ;MOV     DL, 0x80    ; USB驱动器
+        MOV     DL, 0x00     ; IN QEMU!!!
 
         INT     0x13        ; 重置驱动器
         JMP     retry
@@ -75,8 +73,8 @@ next:
         MOV     ES, AX      ; 因为没有 ADD ES, 0x020指令
         ADD     CL, 1       ; sector++
         
-        CMP     CL, 63      ; cl与63比较
-        ;CMP     CL, 18      ; in QEMU !!!
+        ;CMP     CL, 63      ; cl与63比较
+        CMP     CL, 18      ; in QEMU !!!
 
         JBE     readloop    ; jump if below or equal
 
@@ -88,14 +86,14 @@ next:
 
         JB      readloop
 
-        ;MOV     DH, 0
-        ;ADD     CH, 1       ; cylinders++
-        ;CMP     CH, CYL
-        ;JBE     readloop
+        MOV     DH, 0
+        ADD     CH, 1       ; cylinders++
+        CMP     CH, CYL
+        JBE     readloop
 
+        ;JMP     sayhello
         MOV     [0x0ff0],CH
-        ;JMP     0x8200
-        JMP     sayhello
+        JMP     0x8200
 
 fin:
         HLT                 ; 让CPU停止，等待指令
@@ -122,9 +120,8 @@ putloop:
 
 errmsg:
         DB      0x0a, 0x0a  ; 换行两次
-        DB      "Welcome to Mute-OS!"
-        DB      0x0a
         DB      "Load ERROR!"
+        DB      0x0a
         DB      0
 
 hello:

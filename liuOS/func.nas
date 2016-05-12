@@ -16,12 +16,14 @@ io_hlt:     ; void io_hlt();
     RET
 
 write_mem8: ; void write_mem8(int addr, int data);
+    PUSH    ECX
+    PUSH    AX
     MOV     ECX, EDI
     MOV     EAX, 0
     MOV     AX, SI
-    ;MOV     ECX, [EBP + 8]
-    ;MOV     EAX, [EBP + 12]
     MOV     [ECX], AL
+    POP     AX
+    POP     ECX
     RET
 
 io_cli:     ; void io_cli();

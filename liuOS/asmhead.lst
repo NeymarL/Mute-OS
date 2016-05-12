@@ -101,54 +101,40 @@
    101                                  ; asmheadでしなければいけないことは全部し終わったので、
    102                                  ;   あとはbootpackに任せる
    103                                  
-   104                                  ; bootpackの起動
-   105                                  
-   106                                          ;MOV     EBX,BOTPAK
-   107                                          ;MOV     ECX,[EBX+16]
-   108                                          ;ADD     ECX,3           ; ECX += 3;
-   109                                          ;SHR     ECX,2           ; ECX /= 4;
-   110                                          ;JZ      skip            ; 転送するべきものがない
-   111                                          ;MOV     ESI,[EBX+20]    ; 転送元
-   112                                          ;ADD     ESI,EBX
-   113                                          ;MOV     EDI,[EBX+12]    ; 転送先
-   114                                          ;CALL    memcpy
-   115                                  ;skip:
-   116                                          ;MOV     ESP,[EBX+12]    ; スタック初期値
-   117                                          ;JMP     DWORD 2*8:0x0000001b
-   118                                  
-   119 000000B5 66BC00002800                    MOV     ESP, BOTPAK
-   120 000000BB 66EA000000001000                JMP     DWORD 16:0x00000000
-   121                                  
-   122                                  
-   123                                  waitkbdout:
-   124 000000C3 E464                            IN       AL,0x64
-   125 000000C5 2402                            AND      AL,0x02
-   126 000000C7 75FA                            JNZ     waitkbdout      ; ANDの結果が0でなければwaitkbdoutへ
-   127 000000C9 C3                              RET
-   128                                  
-   129                                  memcpy:
-   130                                          ;MOV     EAX,[ESI]
-   131                                          ;ADD     ESI,4
-   132                                          ;MOV     [EDI],EAX
-   133                                          ;ADD     EDI,4
-   134                                          ;SUB     ECX,1
-   135                                          ;JNZ     memcpy          ; 引き算した結果が0でなければmemcpyへ
-   136 000000CA FC                              CLD
-   137 000000CB F36667A5                        A32     REP     MOVSD
-   138 000000CF C3                              RET
-   139                                  ; memcpyはアドレスサイズプリフィクスを入れ忘れなければ、ストリング命令でも書ける
-   140                                  
-   141                                          ALIGNB  16
-   142                                  GDT0:
-   143 000000D0 <res 00000008>                  RESB    8               ; ヌルセレクタ
-   144          ******************       warning: uninitialized space declared in .text section: zeroing
-   145 000000D8 FFFF00000092CF00                DW      0xffff,0x0000,0x9200,0x00cf ; 読み書き可能セグメント32bit
-   146 000000E0 FFFF0000289A4700                DW      0xffff,0x0000,0x9a28,0x0047 ; 実行可能セグメント32bit（bootpack用）
-   147                                  
-   148 000000E8 0000                            DW      0
-   149                                  GDTR0:
-   150 000000EA 1700                            DW      8*3-1
-   151 000000EC [D0000000]                      DD      GDT0
-   152                                  
-   153                                          ALIGNB  16
-   154                                  bootpack:
+   104                                  
+   105 000000B5 66BC00002800                    MOV     ESP, BOTPAK
+   106 000000BB 66EA000000001000                JMP     DWORD 16:0x00000000
+   107                                  
+   108                                  
+   109                                  waitkbdout:
+   110 000000C3 E464                            IN       AL,0x64
+   111 000000C5 2402                            AND      AL,0x02
+   112 000000C7 75FA                            JNZ     waitkbdout      ; ANDの結果が0でなければwaitkbdoutへ
+   113 000000C9 C3                              RET
+   114                                  
+   115                                  memcpy:
+   116                                          ;MOV     EAX,[ESI]
+   117                                          ;ADD     ESI,4
+   118                                          ;MOV     [EDI],EAX
+   119                                          ;ADD     EDI,4
+   120                                          ;SUB     ECX,1
+   121                                          ;JNZ     memcpy          ; 引き算した結果が0でなければmemcpyへ
+   122 000000CA FC                              CLD
+   123 000000CB F36667A5                        A32     REP     MOVSD
+   124 000000CF C3                              RET
+   125                                  ; memcpyはアドレスサイズプリフィクスを入れ忘れなければ、ストリング命令でも書ける
+   126                                  
+   127                                          ALIGNB  16
+   128                                  GDT0:
+   129 000000D0 <res 00000008>                  RESB    8               ; ヌルセレクタ
+   130          ******************       warning: uninitialized space declared in .text section: zeroing
+   131 000000D8 FFFF00000092CF00                DW      0xffff,0x0000,0x9200,0x00cf ; 読み書き可能セグメント32bit
+   132 000000E0 FFFF0000289A4700                DW      0xffff,0x0000,0x9a28,0x0047 ; 実行可能セグメント32bit（bootpack用）
+   133                                  
+   134 000000E8 0000                            DW      0
+   135                                  GDTR0:
+   136 000000EA 1700                            DW      8*3-1
+   137 000000EC [D0000000]                      DD      GDT0
+   138                                  
+   139                                          ALIGNB  16
+   140                                  bootpack:

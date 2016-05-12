@@ -1,5 +1,9 @@
-MAKE     = make -r
-LDFILE = rule.ld
+MAKE     = 	make -r
+LDFILE   = 	rule.ld
+DD 		 = 	dd
+NASM     =  nasm
+CC 		 =  gcc
+QEMU     =  qemu-system-i386
 
 
 # 生成img镜像
@@ -7,23 +11,27 @@ default:
 	$(MAKE) img
 
 # 写入到u盘
-usb:
-	dd if=Mute-OS.img of=/dev/sdb
+usb: ipl.bin asmhead.bin
+	cat ipl.bin > test.img
+	$(DD) if=test.img of=/dev/sdb
 
-ipl.bin : ipl.nas Makefile
-	nasm ipl.nas -o ipl.bin
+ipl.bin : ipl.nas ipl_qemu.nas Makefile
+	$(NASM) ipl.nas -o ipl.bin
 
 asmhead.bin : asmhead.nas
-	nasm asmhead.nas -o asmhead.bin -l asmhead.lst
+	$(NASM) asmhead.nas -o asmhead.bin -l asmhead.lst
 
 func.o : func.nas
-	nasm -f elf64 func.nas -l func.lst
+	$(NASM) -f elf64 func.nas -l func.lst
 
 bootpack.o : bootpack.c
-	gcc -ggdb -c bootpack.c -o bootpack.o
+	$(CC) -ggdb -c bootpack.c -o bootpack.o
 
-bootpack.elf : bootpack.o func.o
-	ld bootpack.o func.o -o bootpack.elf -T $(LDFILE)
+graphic.o : graphic.c
+	$(CC) -ggdb -c graphic.c -o graphic.o
+
+bootpack.elf : bootpack.o func.o graphic.o font.o
+	$(LD) bootpack.o func.o graphic.o font.o -o bootpack.elf -T $(LDFILE)
 
 bootpack.bin : bootpack.elf
 	objcopy -R .pdr -R .comment -R .note -S -O binary bootpack.elf bootpack.bin
@@ -31,19 +39,26 @@ bootpack.bin : bootpack.elf
 Mute-OS.sys : bootpack.bin ipl.bin asmhead.bin
 	cat ipl.bin asmhead.bin bootpack.bin > Mute-OS.sys
 
+font.o : font.c
+	$(CC) -c font.c -o font.o
+	
+
 img : Mute-OS.sys
-	dd if=Mute-OS.sys of=Mute-OS.img
+	$(DD) if=Mute-OS.sys of=Mute-OS.img
 
 run : img
-	qemu-system-i386 -fda Mute-OS.img
+	$(QEMU) -drive file=Mute-OS.img,format=raw,index=0,if=floppy
 
 debug : img
-	qemu-system-i386 -s -S -fda Mute-OS.img
+	$(QEMU) -s -S -drive file=Mute-OS.img,format=raw,index=0,if=floppy
 
 #Mute-OS.sys : asmhead.bin ipl.bin
-#	nasm -o test.o test.asm -l test.lst
+#	$(NASM) -o test.o test.asm -l test.lst
 #	cat ipl.bin asmhead.bin test.o > Mute-OS.sys
 
+test : font.o testFont.c
+	$(CC) testFont.c font.o -o test
+	./test
 
 clean :
 	rm func.o
@@ -53,4 +68,5 @@ clean :
 	rm Mute-OS.*
 	rm ipl.bin
 	rm asmhead.bin
-	
+	rm graphic.o
+	rm font.o
