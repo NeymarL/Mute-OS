@@ -11,15 +11,14 @@ default:
 	$(MAKE) img
 
 # 写入到u盘
-usb: ipl.bin asmhead.bin
-	cat ipl.bin > test.img
-	$(DD) if=test.img of=/dev/sdb
+usb: img
+	$(DD) if=Mute-OS.img of=/dev/sdb
 
 ipl.bin : ipl.nas ipl_qemu.nas Makefile
-	$(NASM) ipl.nas -o ipl.bin
+	$(NASM) -f bin ipl.nas -o ipl.bin
 
 asmhead.bin : asmhead.nas
-	$(NASM) asmhead.nas -o asmhead.bin -l asmhead.lst
+	$(NASM) -f bin asmhead.nas -o asmhead.bin -l asmhead.lst
 
 func.o : func.nas
 	$(NASM) -f elf64 func.nas -l func.lst
@@ -46,7 +45,9 @@ font.o : font.c
 img : Mute-OS.sys
 	$(DD) if=Mute-OS.sys of=Mute-OS.img
 
-run : img
+run : ipl_qemu.nas
+	$(NASM) -f bin ipl_qemu.nas -o ipl.bin
+	$(MAKE) img
 	$(QEMU) -drive file=Mute-OS.img,format=raw,index=0,if=floppy
 
 debug : img
@@ -61,12 +62,9 @@ test : font.o testFont.c
 	./test
 
 clean :
-	rm func.o
-	rm bootpack.o
+	rm *.o
 	rm bootpack.elf
 	rm bootpack.bin
 	rm Mute-OS.*
-	rm ipl.bin
-	rm asmhead.bin
-	rm graphic.o
-	rm font.o
+	rm *.bin
+	

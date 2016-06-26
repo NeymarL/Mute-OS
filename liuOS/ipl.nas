@@ -43,7 +43,6 @@ entry:
         MOV     DH, 0       ; 磁头0
         MOV     CL, 2       ; 扇区2
 
-        JMP     sayhello
 
 readloop:
         MOV     SI, 0       ; 记录失败次数
@@ -94,8 +93,8 @@ next:
         ;JBE     readloop
 
         MOV     [0x0ff0],CH
-        ;JMP     0x8200
-        JMP     sayhello
+        JMP     0x8200
+        ;JMP     sayhello
 
 fin:
         HLT                 ; 让CPU停止，等待指令
@@ -129,7 +128,7 @@ errmsg:
 
 hello:
         DB      0x0a, 0x0a  ; 换行两次
-        DB      "Welcome to Mute-OS!"
+        DB      "Welcome to Mute-OS! !"
         DB      0x0a
         DB      0
 
