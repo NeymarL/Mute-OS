@@ -18,12 +18,16 @@ boot.o : boot.asm
 usb : bin
 	$(DD) if=boot.bin of=/dev/sdb
 
-run : bin
-	$(QEMU) -drive file=boot.bin,format=raw,index=0,if=floppy
+img : bin
+	$(DD) if=boot.bin of=a.img bs=512 count=1 conv=notrunc
+
+run : img
+	$(QEMU) -drive file=a.img,format=raw,index=0,if=floppy
 
 debug : bin
 	$(QEMU) -s -S -drive file=boot.bin,format=raw,index=0,if=floppy
 
 clean :
-	$(RM) *.o
 	$(RM) *.bin
+	$(RM) *.img
+	$(RM) *.o
