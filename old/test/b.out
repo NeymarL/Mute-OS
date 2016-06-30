@@ -1,0 +1,25 @@
+
+foobar：     文件格式 elf64-x86-64
+
+
+Disassembly of section .text:
+
+00000000004000f0 <.text>:
+  4000f0:	e8 23 00 00 00       	callq  0x400118
+  4000f5:	bb 00 00 00 00       	mov    $0x0,%ebx
+  4000fa:	b8 01 00 00 00       	mov    $0x1,%eax
+  4000ff:	cd 80                	int    $0x80
+  400101:	67 8b 54 24 08       	mov    0x8(%esp),%edx
+  400106:	67 8b 4c 24 04       	mov    0x4(%esp),%ecx
+  40010b:	bb 01 00 00 00       	mov    $0x1,%ebx
+  400110:	b8 04 00 00 00       	mov    $0x4,%eax
+  400115:	cd 80                	int    $0x80
+  400117:	c3                   	retq   
+  400118:	55                   	push   %rbp
+  400119:	48 89 e5             	mov    %rsp,%rbp
+  40011c:	be 0d 00 00 00       	mov    $0xd,%esi
+  400121:	bf 2e 01 40 00       	mov    $0x40012e,%edi
+  400126:	e8 d6 ff ff ff       	callq  0x400101
+  40012b:	90                   	nop
+  40012c:	5d                   	pop    %rbp
+  40012d:	c3                   	retq   
