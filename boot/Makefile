@@ -15,8 +15,8 @@ bin : boot.asm
 boot.o : boot.asm
 	$(NASM) boot.asm -o boot.o
 
-usb : bin
-	$(DD) if=boot.bin of=/dev/sdb
+usb : img
+	$(DD) if=a.img of=/dev/sdb
 
 img : bin
 	$(DD) if=boot.bin of=a.img bs=512 count=1 conv=notrunc
