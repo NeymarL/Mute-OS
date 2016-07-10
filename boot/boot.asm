@@ -47,10 +47,10 @@ LABEL_START:
 
 LABEL_SEARCH_IN_ROOT_DIR_BEGIN:
     cmp word [wRootDirSizeForLoop], 0   ;  `. 判断根目录区是不是已经读完
-    jz  LABEL_NO_LOADERBIN      ;  /  如果读完表示没有找到 LOADER.BIN
-    dec word [wRootDirSizeForLoop]  ; /
+    jz  LABEL_NO_LOADERBIN              ;  /  如果读完表示没有找到 LOADER.BIN
+    dec word [wRootDirSizeForLoop]      ; /
     mov ax, BaseOfLoader
-    mov es, ax          ; es <- BaseOfLoader
+    mov es, ax              ; es <- BaseOfLoader
     mov bx, OffsetOfLoader  ; bx <- OffsetOfLoader
     mov ax, [wSectorNo]     ; ax <- Root Directory 中的某 Sector 号
     mov cl, 1
