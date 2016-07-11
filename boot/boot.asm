@@ -96,6 +96,9 @@ LABEL_NO_LOADERBIN:
     call    DispStr     ; 显示字符串
     jmp $               ; 没有找到 LOADER.BIN, 死循环在这里
 
+LABEL_FILENAME_FOUND:           ; 找到 LOADER.BIN 后便来到这里继续
+    jmp $           ; 代码暂时停在这里
+    
 ;============================================================================
 ;变量
 wRootDirSizeForLoop dw  RootDirSectors  ; Root Directory 占用的扇区数，
