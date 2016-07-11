@@ -24,8 +24,8 @@ usb : img
 	$(DD) if=a.img of=/dev/sdb
 
 f12image : bin
-	$(DD) if=/dev/zero of=${RAW} bs=10M count=1
-	mkfs.vfat -F 12 ${RAW}
+	$(DD) if=/dev/zero of=${RAW} bs=1440K count=1
+	mkfs.fat -F 12 -r 224 -s 1 -S 512 -M 0xF0 -R 1 ${RAW}
 	mount ${RAW} test
 	cp loader.bin test/
 	umount ${RAW}
