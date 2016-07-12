@@ -8,8 +8,7 @@
 
 ;================================================================================================
 BaseOfStack         equ 07c00h  ; 堆栈基地址(栈底, 从这个位置向低地址生长)
-BaseOfLoader        equ 09000h  ; LOADER.BIN 被加载到的位置 ----  段地址
-OffsetOfLoader      equ 0100h   ; LOADER.BIN 被加载到的位置 ---- 偏移地址
+%include    "load.inc"
 ;================================================================================================
 
 
@@ -151,10 +150,10 @@ bOdd                db  0       ; 奇数还是偶数
 ;字符串
 LoaderFileName      db  "LOADER  BIN", 0 ; LOADER.BIN 之文件名
 ; 为简化代码, 下面每个字符串的长度均为 MessageLength
-MessageLength       equ 9
-BootMessage:        db  "Booting  " ; 9字节, 不够则用空格补齐. 序号 0
-Message1            db  "Ready.   " ; 9字节, 不够则用空格补齐. 序号 1
-Message2            db  "No LOADER" ; 9字节, 不够则用空格补齐. 序号 2
+MessageLength       equ 16
+BootMessage:        db  "[ OK ] Booting.." ; 16字节, 不够则用空格补齐. 序号 0
+Message1            db  "[ OK ] Ready    " ; 16字节, 不够则用空格补齐. 序号 1
+Message2            db  "[ NO ] No LOADER" ; 16字节, 不够则用空格补齐. 序号 2
 ;============================================================================
 
 
@@ -172,7 +171,7 @@ DispStr:
     mov     es, ax          ; /
     mov     cx, MessageLength   ; CX = 串长度
     mov     ax, 01301h      ; AH = 13,  AL = 01h
-    mov     bx, 0007h       ; 页号为0(BH = 0) 黑底白字(BL = 07h)
+    mov     bx, 0002h       ; 页号为0(BH = 0) 黑底绿字(BL = 02h)
     mov     dl, 0
     int     10h             ; int 10h
     ret
