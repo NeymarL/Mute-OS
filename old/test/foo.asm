@@ -20,6 +20,8 @@ global myprint
 _start:
         ;push    dword   num2nd;   ; '.
         ;push    dword   num1st    ; |
+        mov     rcx, num2nd
+        mov     rdx, num1st
         call    choose              ; choose(num1st, num2nd)
         add     esp, 8
 
@@ -29,8 +31,8 @@ _start:
 
 ; void myprint(char* msg, int len)
 myprint:
-        mov     edx, [esp + 8]      ; len
-        mov     ecx, [esp + 4]      ; msg
+        ;mov     edx, rcx      ; len
+        ;mov     ecx, rdx      ; msg
         mov     ebx, 1
         mov     eax, 4              ; sys_write
         int     0x80

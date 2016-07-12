@@ -10,37 +10,43 @@ RAW 	 =  raw.img
 CONTAINER= 	image.img
 OSIMG 	 = 	Muteos.img
 
-default :
-	$(MAKE) run
+KERNELDIR= 	../kernel
+BOOTDIR	 = 	.
+MOUNTDIR =  ../mnt
+ROOTDIR  =  ..
 
-bin : boot.asm loader.asm
+default :
+	$(MAKE) bootloader
+
+bootloader : boot.asm loader.asm
 	$(NASM) boot.asm -o boot.bin
 	$(NASM) loader.asm -o loader.bin
 
-boot.o : boot.asm
-	$(NASM) boot.asm -o boot.o
+kernel :
+	$(NASM) -f elf64 ${KERNELDIR}/kernel.asm -o ${KERNELDIR}/kernel.bin
+
 
 usb : img
-	$(DD) if=a.img of=/dev/sdb
+	$(DD) if=${OSIMG} of=/dev/sdb
 
-f12image : bin
-	$(DD) if=/dev/zero of=${RAW} bs=1440K count=1
-	mkfs.fat -F 12 -r 224 -s 1 -S 512 -M 0xF0 -R 1 ${RAW}
-	mount ${RAW} test
-	cp loader.bin test/
-	umount ${RAW}
+f12image : bootloader kernel
+	$(DD) if=/dev/zero of=${ROOTDIR}/${RAW} bs=1440K count=1
+	mkfs.fat -F 12 -r 224 -s 1 -S 512 -M 0xF0 -R 1 ${ROOTDIR}/${RAW}
+	mount ${ROOTDIR}/${RAW} ${MOUNTDIR}
+	cp loader.bin ${MOUNTDIR}
+	cp ${KERNELDIR}/kernel.bin ${MOUNTDIR}
+	umount ${ROOTDIR}/${RAW}
 
-img : bin f12image
-	$(DD) if=${RAW} of=${CONTAINER} bs=512 skip=1
-	cat boot.bin ${CONTAINER} > ${OSIMG}
+img : f12image
+	$(DD) if=${ROOTDIR}/${RAW} of=${ROOTDIR}/${CONTAINER} bs=512 skip=1
+	cat boot.bin ${ROOTDIR}/${CONTAINER} > ${ROOTDIR}/${OSIMG}
 
 run : img
-	$(QEMU) -drive file=${OSIMG},format=raw,index=0,if=floppy
+	$(QEMU) -drive file=${ROOTDIR}/${OSIMG},format=raw,index=0,if=floppy
 
-debug : bin
-	$(QEMU) -s -S -drive file=${OSIMG},format=raw,index=0,if=floppy
+debug : bootloader
+	$(QEMU) -s -S -drive file=${ROOTDIR}/${OSIMG},format=raw,index=0,if=floppy
 
 clean :
 	$(RM) *.bin
 	$(RM) *.img
-	$(RM) *.o

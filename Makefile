@@ -1,70 +1,57 @@
+# Makefile
+# 目标 : 生成MuteOS的磁盘镜像 MuteOS.img
+
 MAKE     = 	make -r
 LDFILE   = 	rule.ld
 DD 		 = 	dd
 NASM     =  nasm
 CC 		 =  gcc
 QEMU     =  qemu-system-i386
+RM		 =  rm
+
+KERNELDIR= 	kernel
+BOOTDIR	 = 	boot
+MOUNTDIR =  mnt
+ROOTDIR  =  .
+
+RAW 	 =  ${ROOTDIR}/raw.img
+CONTAINER= 	${ROOTDIR}/image.img
+OSIMG 	 = 	${ROOTDIR}/MuteOS.img
 
 
-# 生成img镜像
-default:
-	$(MAKE) img
 
-# 写入到u盘
-usb: img
-	$(DD) if=Mute-OS.img of=/dev/sdb
+default :
+	$(MAKE) run
 
-ipl.bin : ipl.nas ipl_qemu.nas Makefile
-	$(NASM) -f bin ipl.nas -o ipl.bin
+bootloader : ${BOOTDIR}/boot.asm ${BOOTDIR}/loader.asm
+	cd ${BOOTDIR} && ${MAKE}
+	cd ${ROOTDIR}
 
-asmhead.bin : asmhead.nas
-	$(NASM) -f bin asmhead.nas -o asmhead.bin -l asmhead.lst
+kernel : ${KERNELDIR}/kernel.asm
+	$(NASM) -f elf64 ${KERNELDIR}/kernel.asm -o ${KERNELDIR}/kernel.bin
 
-func.o : func.nas
-	$(NASM) -f elf64 func.nas -l func.lst
+usb : img
+	$(DD) if=${OSIMG} of=/dev/sdb
 
-bootpack.o : bootpack.c
-	$(CC) -ggdb -c bootpack.c -o bootpack.o
+f12image : bootloader kernel
+	$(DD) if=/dev/zero of=${RAW} bs=1440K count=1
+	mkfs.fat -F 12 -r 224 -s 1 -S 512 -M 0xF0 -R 1 ${RAW}
+	mount ${RAW} ${MOUNTDIR}
+	cp ${BOOTDIR}/loader.bin ${MOUNTDIR}
+	cp ${KERNELDIR}/kernel.bin ${MOUNTDIR}
+	umount ${RAW}
 
-graphic.o : graphic.c
-	$(CC) -ggdb -c graphic.c -o graphic.o
+img : f12image
+	$(DD) if=${RAW} of=${CONTAINER} bs=512 skip=1
+	cat ${BOOTDIR}/boot.bin ${CONTAINER} > ${OSIMG}
+	$(RM) ${RAW} ${CONTAINER}
 
-bootpack.elf : bootpack.o func.o graphic.o font.o
-	$(LD) bootpack.o func.o graphic.o font.o -o bootpack.elf -T $(LDFILE)
+run : img
+	$(QEMU) -drive file=${OSIMG},format=raw,index=0,if=floppy
 
-bootpack.bin : bootpack.elf
-	objcopy -R .pdr -R .comment -R .note -S -O binary bootpack.elf bootpack.bin
-
-Mute-OS.sys : bootpack.bin ipl.bin asmhead.bin
-	cat ipl.bin asmhead.bin bootpack.bin > Mute-OS.sys
-
-font.o : font.c
-	$(CC) -c font.c -o font.o
-	
-
-img : Mute-OS.sys
-	$(DD) if=Mute-OS.sys of=Mute-OS.img
-
-run : ipl_qemu.nas
-	$(NASM) -f bin ipl_qemu.nas -o ipl.bin
-	$(MAKE) img
-	$(QEMU) -drive file=Mute-OS.img,format=raw,index=0,if=floppy
-
-debug : img
-	$(QEMU) -s -S -drive file=Mute-OS.img,format=raw,index=0,if=floppy
-
-#Mute-OS.sys : asmhead.bin ipl.bin
-#	$(NASM) -o test.o test.asm -l test.lst
-#	cat ipl.bin asmhead.bin test.o > Mute-OS.sys
-
-test : font.o testFont.c
-	$(CC) testFont.c font.o -o test
-	./test
+debug : bootloader
+	$(QEMU) -s -S -drive file=${OSIMG},format=raw,index=0,if=floppy
 
 clean :
-	rm *.o
-	rm bootpack.elf
-	rm bootpack.bin
-	rm Mute-OS.*
-	rm *.bin
-	
+	$(RM) ${OSIMG} ${BOOTDIR}/boot.bin ${BOOTDIR}/loader.bin ${KERNELDIR}/kernel.bin
+
