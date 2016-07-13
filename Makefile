@@ -2,12 +2,12 @@
 # 目标 : 生成MuteOS的磁盘镜像 MuteOS.img
 
 MAKE     = 	make -r
-LDFILE   = 	rule.ld
+LD   	 = 	ld
 DD 		 = 	dd
 NASM     =  nasm
 CC 		 =  gcc
 QEMU     =  qemu-system-i386
-RM		 =  rm
+RM		 =  rm -f
 
 KERNELDIR= 	kernel
 BOOTDIR	 = 	boot
@@ -27,8 +27,9 @@ bootloader : ${BOOTDIR}/boot.asm ${BOOTDIR}/loader.asm
 	cd ${BOOTDIR} && ${MAKE}
 	cd ${ROOTDIR}
 
-kernel : ${KERNELDIR}/kernel.asm
-	$(NASM) -f elf64 ${KERNELDIR}/kernel.asm -o ${KERNELDIR}/kernel.bin
+kernel : ${KERNELDIR}/kernel.asm bootloader
+	$(NASM) -f elf64 ${KERNELDIR}/kernel.asm -o ${KERNELDIR}/kernel.o
+	$(LD) -s -Ttext 0x30400 -o ${KERNELDIR}/kernel.bin ${KERNELDIR}/kernel.o
 
 usb : img
 	$(DD) if=${OSIMG} of=/dev/sdb
