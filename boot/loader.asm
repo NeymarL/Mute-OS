@@ -362,8 +362,9 @@ LABEL_PM_START:
     mov     ah, 02h
     call    DispStr
     add     esp, 4
+
     ; 重新加载内核
-    ;call    InitKernel
+    call    InitKernel
     jmp     $
     ;***************************************************************
     ;jmp     SelectorFlatC:KernelEntryPointPhyAddr   ; 正式进入内核 *
@@ -556,20 +557,21 @@ SetupPaging:
 ;   来确定把什么放进内存，放到什么位置，以及放多少。
 ; --------------------------------------------------------------------------------------------
 InitKernel:
+;[BITS   64]
         xor     esi, esi
-        mov     cx, word [BaseOfKernelFilePhyAddr+2Ch]  ;`. ecx <- pELFHdr->e_phnum
+        mov     cx, word [BaseOfKernelFilePhyAddr+38h]  ;`. ecx <- pELFHdr->e_phnum
         movzx   ecx, cx                                 ;/
-        mov     esi, [BaseOfKernelFilePhyAddr + 1Ch]    ;   esi <- pELFHdr->e_phoff
+        mov     esi, [BaseOfKernelFilePhyAddr + 20h]    ;   esi <- pELFHdr->e_phoff
         add     esi, BaseOfKernelFilePhyAddr            ;   esi<-OffsetOfKernel+pELFHdr->e_phoff
 .Begin:
         mov     eax, [esi + 0]
         cmp     eax, 0                          ; PT_NULL
         jz      .NoAction
-        push    dword [esi + 010h]        ;size ;`.
+        push    dword [esi + 01Ch]        ;size ;`.
         mov     eax, [esi + 04h]                ; |
         add     eax, BaseOfKernelFilePhyAddr    ; | memcpy((void*)(pPHdr->p_vaddr),
         push    eax                       ;src  ; |      uchCode + pPHdr->p_offset,
-        push    dword [esi + 08h]         ;dst  ; |      pPHdr->p_filesz;
+        push    dword [esi + 0Ch]         ;dst  ; |      pPHdr->p_filesz;
         call    MemCpy                          ; |
         add     esp, 12                         ;/
 .NoAction:
