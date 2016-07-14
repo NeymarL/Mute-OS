@@ -76,21 +76,21 @@ LABEL_SEARCH_IN_ROOT_DIR_BEGIN:
     jz      LABEL_NO_LOADERBIN              ;  /  如果读完表示没有找到 KERNEL.BIN
     dec     word [wRootDirSizeForLoop]      ; /
     mov     ax, BaseOfKernelFile
-    mov     es, ax              ; es <- BaseOfKernelFile
-    mov     bx, OffsetOfKernelFile  ; bx <- OffsetOfKernelFile
-    mov     ax, [wSectorNo]     ; ax <- Root Directory 中的某 Sector 号
+    mov     es, ax                          ; es <- BaseOfKernelFile
+    mov     bx, OffsetOfKernelFile          ; bx <- OffsetOfKernelFile
+    mov     ax, [wSectorNo]                 ; ax <- Root Directory 中的某 Sector 号
     mov     cl, 1
     call    ReadSector
 
-    mov     si, KernelFileName  ; ds:si -> "KERNEL  BIN"
+    mov     si, KernelFileName              ; ds:si -> "KERNEL  BIN"
     mov     di, OffsetOfKernelFile
     cld
     mov     dx, 10h
 
 LABEL_SEARCH_FOR_LOADERBIN:
-    cmp     dx, 0               ; `. 循环次数控制,
+    cmp     dx, 0                           ; `. 循环次数控制,
     jz      LABEL_GOTO_NEXT_SECTOR_IN_ROOT_DIR ;  / 如果已经读完了一个 Sector,
-    dec     dx                  ; /  就跳到下一个 Sector
+    dec     dx                              ; /  就跳到下一个 Sector
     mov     cx, 11
 
 LABEL_CMP_FILENAME:
@@ -117,28 +117,28 @@ LABEL_GOTO_NEXT_SECTOR_IN_ROOT_DIR:
     jmp     LABEL_SEARCH_IN_ROOT_DIR_BEGIN
 
 LABEL_NO_LOADERBIN:
-    mov     dh, 2           ; "No KERNEL."
-    call    DispStrRealMode         ; 显示字符串
-    jmp     $               ; 没有找到 KERNEL.BIN, 死循环在这里
+    mov     dh, 2                       ; "No KERNEL."
+    call    DispStrRealMode             ; 显示字符串
+    jmp     $                           ; 没有找到 KERNEL.BIN, 死循环在这里
 
-LABEL_FILENAME_FOUND:       ; 找到 KERNEL.BIN 后便来到这里继续
+LABEL_FILENAME_FOUND:                   ; 找到 KERNEL.BIN 后便来到这里继续
     mov     ax, RootDirSectors
-    and     di, 0FFE0h      ; di -> 当前条目的开始
+    and     di, 0FFE0h                  ; di -> 当前条目的开始
 
     push    eax
     mov     eax, [es : di + 01Ch]       ; `.
     mov     dword [dwKernelSize], eax   ; / 保存 KERNEL.BIN 文件大小
     pop     eax
 
-    add     di, 01Ah        ; di -> 首 Sector
+    add     di, 01Ah                    ; di -> 首 Sector
     mov     cx, word [es:di]
-    push    cx              ; 保存此 Sector 在 FAT 中的序号
+    push    cx                          ; 保存此 Sector 在 FAT 中的序号
     add     cx, ax
-    add     cx, DeltaSectorNo   ; cl <- KERNEL.BIN的起始扇区号(0-based)
+    add     cx, DeltaSectorNo           ; cl <- KERNEL.BIN的起始扇区号(0-based)
     mov     ax, BaseOfKernelFile
-    mov     es, ax              ; es <- BaseOfKernelFile
-    mov     bx, OffsetOfKernelFile  ; bx <- OffsetOfKernelFile
-    mov     ax, cx              ; ax <- Sector 号
+    mov     es, ax                      ; es <- BaseOfKernelFile
+    mov     bx, OffsetOfKernelFile      ; bx <- OffsetOfKernelFile
+    mov     ax, cx                      ; ax <- Sector 号
 
 LABEL_GOON_LOADING_FILE:
     push    ax              ; `.
@@ -162,10 +162,10 @@ LABEL_GOON_LOADING_FILE:
     add     ax, DeltaSectorNo
     add     bx, [BPB_BytsPerSec]
     jmp     LABEL_GOON_LOADING_FILE
+
 LABEL_FILE_LOADED:
-    ;call   KillMotor       ; 关闭软驱马达
-    mov     dh, 1           ; "Ready."
-    call    DispStrRealMode ; 显示字符串
+    mov     dh, 1               ; "Ready."
+    call    DispStrRealMode     ; 显示字符串
     ; 下面准备跳入保护模式
 
     ; 加载 GDTR
@@ -363,11 +363,14 @@ LABEL_PM_START:
     call    DispStr
     add     esp, 4
 
+    call    DispReturn
+    ;call    ShowMem
+
     ; 重新加载内核
     call    InitKernel
-    jmp     $
+    ;jmp     $
     ;***************************************************************
-    ;jmp     SelectorFlatC:KernelEntryPointPhyAddr   ; 正式进入内核 *
+    jmp     SelectorFlatC:KernelEntryPointPhyAddr   ; 正式进入内核 *
     ;***************************************************************
     ; 内存看上去是这样的：
     ;              ┃                                    ┃
@@ -405,16 +408,16 @@ LABEL_PM_START:
     ;       80000h ┃■■■■■■■KERNEL.BIN■■■■■■┃
     ;              ┣━━━━━━━━━━━━━━━━━━┫
     ;              ┃■■■■■■■■■■■■■■■■■■┃
-    ;       30000h ┃■■■■■■■■KERNEL■■■■■■■┃ 30400h ← KERNEL 入口 (KernelEntryPointPhyAddr)
+    ;       30000h ┃■■■■■■■■KERNEL■■■■■■■┃ 
     ;              ┣━━━━━━━━━━━━━━━━━━┫
-    ;              ┃                                    ┃
-    ;        7E00h ┃              F  R  E  E            ┃
+    ;              ┃                                  ┃
+    ;        7E00h ┃              F  R  E  E          ┃
     ;              ┣━━━━━━━━━━━━━━━━━━┫
     ;              ┃■■■■■■■■■■■■■■■■■■┃
     ;        7C00h ┃■■■■■■BOOT  SECTOR■■■■■■┃
     ;              ┣━━━━━━━━━━━━━━━━━━┫
-    ;              ┃                                    ┃
-    ;         500h ┃              F  R  E  E            ┃
+    ;              ┃                                  ┃
+    ;         500h ┃               Kernel             ┃  600h ← KERNEL 入口 (KernelEntryPointPhyAddr)
     ;              ┣━━━━━━━━━━━━━━━━━━┫
     ;              ┃□□□□□□□□□□□□□□□□□□┃
     ;         400h ┃□□□□ROM BIOS parameter area □□┃
@@ -457,14 +460,14 @@ DispMemInfo:
     mov     edi, ARDStruct      ;  {//依次显示:BaseAddrLow,BaseAddrHigh,LengthLow
 .1:                             ;               LengthHigh,Type
     push    dword [esi]         ;
-    ;call    DispInt             ;    DispInt(MemChkBuf[j*4]); // 显示一个成员
+    ;call    DispInt            ;    DispInt(MemChkBuf[j*4]); // 显示一个成员
     pop     eax                 ;
     stosd                       ;    ARDStruct[j*4] = MemChkBuf[j*4];
     add     esi, 4              ;
     dec     edx                 ;
     cmp     edx, 0              ;
     jnz     .1                  ;  }
-    ;call    DispReturn          ;  printf("\n");
+    ;call    DispReturn         ;  printf("\n");
     cmp     dword [dwType], 1   ;  if(Type == AddressRangeMemory)
     jne     .2                  ;  {
     mov     eax, [dwBaseAddrLow];
@@ -559,29 +562,46 @@ SetupPaging:
 InitKernel:
 ;[BITS   64]
         xor     esi, esi
-        mov     cx, word [BaseOfKernelFilePhyAddr+38h]  ;`. ecx <- pELFHdr->e_phnum
-        movzx   ecx, cx                                 ;/
-        mov     esi, [BaseOfKernelFilePhyAddr + 20h]    ;   esi <- pELFHdr->e_phoff
-        add     esi, BaseOfKernelFilePhyAddr            ;   esi<-OffsetOfKernel+pELFHdr->e_phoff
+        mov     cx, word [BaseOfKernelFilePhyAddr + 38h]    ;`. ecx <- pELFHdr->e_phnum
+        movzx   ecx, cx                                     ;/
+        mov     esi, dword [BaseOfKernelFilePhyAddr + 20h]  ;   esi <- pELFHdr->e_phoff
+        add     esi, BaseOfKernelFilePhyAddr                ;   esi <- OffsetOfKernel+pELFHdr->e_phoff
 .Begin:
-        mov     eax, [esi + 0]
+        mov     eax, dword [esi]
         cmp     eax, 0                          ; PT_NULL
         jz      .NoAction
-        push    dword [esi + 01Ch]        ;size ;`.
-        mov     eax, [esi + 04h]                ; |
+        push    dword [esi + 020h]        ;size ;`.
+        mov     eax, [esi + 08h]                ; |
         add     eax, BaseOfKernelFilePhyAddr    ; | memcpy((void*)(pPHdr->p_vaddr),
         push    eax                       ;src  ; |      uchCode + pPHdr->p_offset,
-        push    dword [esi + 0Ch]         ;dst  ; |      pPHdr->p_filesz;
+        push    dword [esi + 10h]         ;dst  ; |      pPHdr->p_filesz;
         call    MemCpy                          ; |
         add     esp, 12                         ;/
 .NoAction:
-        add     esi, 020h                       ; esi += pELFHdr->e_phentsize
+        add     esi, 038h                       ; esi += pELFHdr->e_phentsize
         dec     ecx
+        ;call    DispInt2
         jnz     .Begin
 
         ret
 ; InitKernel ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+ShowMem:
+[BITS   32]
+        push    ebx
+        xor     ebx, ebx
+.goon:
+        mov     eax, ebx
+        add     eax, BaseOfKernelFilePhyAddr
+        mov     ecx, dword [eax]
+        call    DispInt2
+        
+        add     bx, 4
+        cmp     bx, 0x44
+        jne     .goon
+
+        pop     ebx
+        ret
 
 
 ; SECTION .data1 之开始 ---------------------------------------------------------------------------------------------
@@ -608,6 +628,7 @@ _dwLengthLow:       dd  0
 _dwLengthHigh:      dd  0
 _dwType:            dd  0
 _MemChkBuf: times   1024 db  0
+
 ;
 ;; 保护模式下使用这些符号
 szMemChkTitle       equ BaseOfLoaderPhyAddr + _szMemChkTitle
@@ -625,7 +646,6 @@ dwType              equ BaseOfLoaderPhyAddr + _dwType
 MemChkBuf           equ BaseOfLoaderPhyAddr + _MemChkBuf
 szSetPage           equ BaseOfLoaderPhyAddr + _szSetPage
 szInitKern          equ BaseOfLoaderPhyAddr + _szInitKern
-
 
 ; 堆栈就在数据段的末尾
 StackSpace: times   1024    db  0

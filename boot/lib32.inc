@@ -168,3 +168,34 @@ MemCpy:
     ret                     ; 函数结束，返回
 ; MemCpy 结束-------------------------------------------------------------
 
+; ------------------------------------------------------------------------
+; 显示一个整形数
+; ------------------------------------------------------------------------
+DispInt2:
+    push    eax
+    mov eax, ecx
+    shr eax, 24
+    call    DispAL
+
+    mov eax, ecx
+    shr eax, 16
+    call    DispAL
+
+    mov eax, ecx
+    shr eax, 8
+    call    DispAL
+
+    mov eax, ecx
+    call    DispAL
+
+    mov ah, 07h         ; 0000b: 黑底    0111b: 灰字
+    mov al, 'h'
+    push    edi
+    mov edi, [dwDispPos]
+    mov [gs:edi], ax
+    add edi, 4
+    mov [dwDispPos], edi
+    pop edi
+    pop     eax
+    ret
+; DispInt 结束------------------------------------------------------------
