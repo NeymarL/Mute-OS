@@ -12,6 +12,7 @@ RM		 =  rm -f
 KERNELDIR= 	kernel
 BOOTDIR	 = 	boot
 MOUNTDIR =  mnt
+LIBDIR 	 = 	lib
 ROOTDIR  =  .
 
 RAW 	 =  ${ROOTDIR}/raw.img
@@ -27,10 +28,15 @@ bootloader : ${BOOTDIR}/boot.asm ${BOOTDIR}/loader.asm
 	cd ${BOOTDIR} && ${MAKE}
 	cd ${ROOTDIR}
 
-kernel : ${KERNELDIR}/kernel.asm Makefile
+kernel : ${KERNELDIR}/kernel.asm Makefile ${LIBDIR}/lib.asm ${KERNELDIR}/start.c
 	$(NASM) -f elf64 ${KERNELDIR}/kernel.asm -o ${KERNELDIR}/kernel.o
-	$(LD) -s -Ttext 0x600 -o ${KERNELDIR}/kernel.bin ${KERNELDIR}/kernel.o
-	#$(LD) -s -o ${KERNELDIR}/kernel.bin ${KERNELDIR}/kernel.o
+	$(CC) -c -o ${KERNELDIR}/start.o ${KERNELDIR}/start.c
+	$(LD) -s -Ttext 0x600 -o ${KERNELDIR}/kernel.bin ${KERNELDIR}/kernel.o \
+			${KERNELDIR}/start.o ${LIBDIR}/lib.o
+
+lib : ${LIBDIR}/lib.asm
+	$(NASM) -f elf64 ${LIBDIR}/lib.asm -o ${LIBDIR}/lib.o
+
 
 usb : img
 	$(DD) if=${OSIMG} of=/dev/sdb
