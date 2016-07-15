@@ -55,37 +55,37 @@ memocpy:
 ;                  void print(const char * pszinfo);
 ; ========================================================================
 print:
-    push    rbp
-    mov     ebp, esp
+        push    rbp
+        mov     ebp, esp
 
-    mov     rsi, edi        ; pszInfo
-    mov     edi, dword [disp_pos]
-    mov     ah, 0Fh
+        mov     rsi, rdi        ; pszInfo
+        mov     edi, dword [disp_pos]
+        mov     ah, 0Fh
 .1:
-    lodsb
-    test    al, al
-    jz      .2
-    cmp     al, 0Ah ; 是回车吗?
-    jnz     .3
-    push    rax
-    mov     eax, edi
-    mov     bl, 160
-    div     bl
-    and     eax, 0FFh
-    inc     eax
-    mov     bl, 160
-    mul     bl
-    mov     edi, eax
-    pop     rax
-    jmp     .1
+        lodsb
+        test    al, al
+        jz      .2
+        cmp     al, 0Ah ; 是回车吗?
+        jnz     .3
+        push    rax
+        mov     eax, edi
+        mov     bl, 160
+        div     bl
+        and     eax, 0FFh
+        inc     eax
+        mov     bl, 160
+        mul     bl
+        mov     edi, eax
+        pop     rax
+        jmp     .1
 .3:
-    mov     [gs:edi], ax
-    add     edi, 2
-    jmp     .1
+        mov     [gs:edi], ax
+        add     edi, 2
+        jmp     .1
 
 .2:
-    mov     dword [disp_pos], edi
+        mov     dword [disp_pos], edi
 
-    pop     rbp
-    ret
+        pop     rbp
+        ret
 ;----------------------------------------------------------------------------

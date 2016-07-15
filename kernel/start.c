@@ -11,5 +11,5 @@ PUBLIC  DESCRIPTOR  gdt[GDT_SIZE];
 
 PUBLIC void cstart()
 {
-    print("------------Welcom to use MuteOS !!!-------------");
+    print("He");
 }
