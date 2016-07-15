@@ -27,7 +27,7 @@ LIBDIR 	 = 	lib
 ROOTDIR  =  .
 
 # this program
-OBJS 	 = 	kernel/kernel.o kernel/start.o lib/lib.o
+OBJS 	 = 	kernel/kernel.o kernel/start.o lib/lib.o kernel/i8259.o
 BOOTBINS = 	boot/boot.bin boot/loader.bin
 KERNBINS =  kernel/kernel.bin
 RAW 	 =  raw.img
@@ -53,7 +53,10 @@ kernel/kernel.bin : ${OBJS}
 kernel/kernel.o : kernel/kernel.asm
 	$(NASM) $(ASMKFLAGS) -o $@ $<
 
-kernel/start.o : kernel/start.c
+kernel/start.o : kernel/start.c include/const.h include/func.h include/type.h
+	$(CC) $(CFLAGS) -o $@ $<
+
+kernel/i8259.o : kernel/i8259.c include/const.h include/func.h include/type.h
 	$(CC) $(CFLAGS) -o $@ $<
 
 lib/lib.o : lib/lib.asm
