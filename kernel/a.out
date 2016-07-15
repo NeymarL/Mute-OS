@@ -8,32 +8,34 @@ Disassembly of section .text:
    0:	55                   	push   %rbp
    1:	48 89 e5             	mov    %rsp,%rbp
    4:	48 83 ec 10          	sub    $0x10,%rsp
-   8:	bf 00 00 00 00       	mov    $0x0,%edi
-   d:	e8 00 00 00 00       	callq  12 <cstart+0x12>
-  12:	b8 00 00 00 00       	mov    $0x0,%eax
-  17:	0f b7 00             	movzwl (%rax),%eax
-  1a:	0f b7 c0             	movzwl %ax,%eax
-  1d:	83 c0 01             	add    $0x1,%eax
-  20:	ba 00 00 00 00       	mov    $0x0,%edx
-  25:	8b 12                	mov    (%rdx),%edx
-  27:	89 d2                	mov    %edx,%edx
-  29:	48 89 d1             	mov    %rdx,%rcx
-  2c:	89 c2                	mov    %eax,%edx
-  2e:	48 89 ce             	mov    %rcx,%rsi
-  31:	bf 00 00 00 00       	mov    $0x0,%edi
-  36:	e8 00 00 00 00       	callq  3b <cstart+0x3b>
-  3b:	48 c7 45 f8 00 00 00 	movq   $0x0,-0x8(%rbp)
-  42:	00 
-  43:	48 c7 45 f0 00 00 00 	movq   $0x0,-0x10(%rbp)
-  4a:	00 
-  4b:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
-  4f:	66 c7 00 ff 03       	movw   $0x3ff,(%rax)
-  54:	b8 00 00 00 00       	mov    $0x0,%eax
-  59:	89 c2                	mov    %eax,%edx
-  5b:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
-  5f:	89 10                	mov    %edx,(%rax)
-  61:	bf 00 00 00 00       	mov    $0x0,%edi
-  66:	e8 00 00 00 00       	callq  6b <cstart+0x6b>
-  6b:	90                   	nop
-  6c:	c9                   	leaveq 
-  6d:	c3                   	retq   
+   8:	be 03 00 00 00       	mov    $0x3,%esi
+   d:	bf 00 00 00 00       	mov    $0x0,%edi
+  12:	e8 00 00 00 00       	callq  17 <cstart+0x17>
+  17:	be 0e 00 00 00       	mov    $0xe,%esi
+  1c:	bf 00 00 00 00       	mov    $0x0,%edi
+  21:	e8 00 00 00 00       	callq  26 <cstart+0x26>
+  26:	b8 00 00 00 00       	mov    $0x0,%eax
+  2b:	0f b7 00             	movzwl (%rax),%eax
+  2e:	0f b7 c0             	movzwl %ax,%eax
+  31:	83 c0 01             	add    $0x1,%eax
+  34:	ba 00 00 00 00       	mov    $0x0,%edx
+  39:	8b 12                	mov    (%rdx),%edx
+  3b:	89 d2                	mov    %edx,%edx
+  3d:	48 89 d1             	mov    %rdx,%rcx
+  40:	89 c2                	mov    %eax,%edx
+  42:	48 89 ce             	mov    %rcx,%rsi
+  45:	bf 00 00 00 00       	mov    $0x0,%edi
+  4a:	e8 00 00 00 00       	callq  4f <cstart+0x4f>
+  4f:	48 c7 45 f8 00 00 00 	movq   $0x0,-0x8(%rbp)
+  56:	00 
+  57:	48 c7 45 f0 00 00 00 	movq   $0x0,-0x10(%rbp)
+  5e:	00 
+  5f:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+  63:	66 c7 00 ff 03       	movw   $0x3ff,(%rax)
+  68:	b8 00 00 00 00       	mov    $0x0,%eax
+  6d:	89 c2                	mov    %eax,%edx
+  6f:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+  73:	89 10                	mov    %edx,(%rax)
+  75:	90                   	nop
+  76:	c9                   	leaveq 
+  77:	c3                   	retq   

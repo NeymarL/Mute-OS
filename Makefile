@@ -1,6 +1,12 @@
-# Makefile
-# 目标 : 生成MuteOS的磁盘镜像 MuteOS.img
+############################################
+# Makefile for MuteOS                      #
+# 目标 : 生成MuteOS的磁盘镜像 MuteOS.img    #
+############################################
 
+# Entry point of OS
+ENTRYPOINT = 0x600
+
+# programs, flags
 MAKE     = 	make -r
 LD   	 = 	ld
 DD 		 = 	dd
@@ -8,40 +14,55 @@ NASM     =  nasm
 CC 		 =  gcc
 QEMU     =  qemu-system-i386
 RM		 =  rm -f
+ASMBFLAGS=  -I boot/include/
+ASMKFLAGS=  -I include/ -f elf64
+CFLAGS   =  -I include/ -c
+LDFLAGS  =  -s -Ttext ${ENTRYPOINT}
 
+# directories
 KERNELDIR= 	kernel
 BOOTDIR	 = 	boot
 MOUNTDIR =  mnt
 LIBDIR 	 = 	lib
 ROOTDIR  =  .
 
-RAW 	 =  ${ROOTDIR}/raw.img
-CONTAINER= 	${ROOTDIR}/image.img
-OSIMG 	 = 	${ROOTDIR}/MuteOS.img
+# this program
+OBJS 	 = 	kernel/kernel.o kernel/start.o lib/lib.o
+BOOTBINS = 	boot/boot.bin boot/loader.bin
+KERNBINS =  kernel/kernel.bin
+RAW 	 =  raw.img
+CONTAINER= 	image.img
+OSIMG 	 = 	MuteOS.img
 
+TARGET   = 	${OSIMG}
 
+everything : ${TARGET}
 
-default :
-	$(MAKE) run
+all : realclean everything
 
-bootloader : ${BOOTDIR}/boot.asm ${BOOTDIR}/loader.asm
-	cd ${BOOTDIR} && ${MAKE}
-	cd ${ROOTDIR}
+boot/boot.bin : boot/boot.asm boot/include/load.inc boot/include/fat12hdr.inc
+	$(NASM) $(ASMBFLAGS) -o $@ $<
 
-kernel : ${KERNELDIR}/kernel.asm Makefile lib ${KERNELDIR}/start.c
-	$(NASM) -f elf64 ${KERNELDIR}/kernel.asm -o ${KERNELDIR}/kernel.o
-	$(CC) -c -o ${KERNELDIR}/start.o ${KERNELDIR}/start.c
-	$(LD) -s -Ttext 0x600 -o ${KERNELDIR}/kernel.bin ${KERNELDIR}/kernel.o \
-			${KERNELDIR}/start.o ${LIBDIR}/lib.o
+boot/loader.bin : boot/loader.asm boot/include/load.inc \
+			 boot/include/fat12hdr.inc boot/include/pm.inc
+	$(NASM) $(ASMBFLAGS) -o $@ $<
 
-lib : ${LIBDIR}/lib.asm
-	$(NASM) -f elf64 ${LIBDIR}/lib.asm -o ${LIBDIR}/lib.o
+kernel/kernel.bin : ${OBJS}
+	$(LD) $(LDFLAGS) -o $@ ${OBJS}
 
+kernel/kernel.o : kernel/kernel.asm
+	$(NASM) $(ASMKFLAGS) -o $@ $<
+
+kernel/start.o : kernel/start.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+lib/lib.o : lib/lib.asm
+	$(NASM) $(ASMKFLAGS) -o $@ $<
 
 usb : img
 	$(DD) if=${OSIMG} of=/dev/sdb
 
-f12image : bootloader kernel
+${RAW} : boot/loader.bin  kernel/kernel.bin
 	$(DD) if=/dev/zero of=${RAW} bs=1440K count=1
 	mkfs.fat -F 12 -r 224 -s 1 -S 512 -M 0xF0 -R 1 ${RAW}
 	mount ${RAW} ${MOUNTDIR}
@@ -49,17 +70,19 @@ f12image : bootloader kernel
 	cp ${KERNELDIR}/kernel.bin ${MOUNTDIR}
 	umount ${RAW}
 
-img : f12image
+${OSIMG} : ${RAW} ${BOOTDIR}/boot.bin
 	$(DD) if=${RAW} of=${CONTAINER} bs=512 skip=1
 	cat ${BOOTDIR}/boot.bin ${CONTAINER} > ${OSIMG}
-	$(RM) ${RAW} ${CONTAINER}
 
-run : img
+run : ${OSIMG} 
 	$(QEMU) -drive file=${OSIMG},format=raw,index=0,if=floppy
 
-debug : bootloader
+debug : ${OSIMG}
 	$(QEMU) -s -S -drive file=${OSIMG},format=raw,index=0,if=floppy
 
 clean :
-	$(RM) ${OSIMG} ${BOOTDIR}/boot.bin ${BOOTDIR}/loader.bin ${KERNELDIR}/kernel.bin
+	$(RM)  ${OBJS} ${RAW} ${CONTAINER}
+
+realclean :
+	$(RM) ${TARGET} ${OBJS} ${BOOTBINS} ${KERNBINS} ${RAW} ${CONTAINER}
 

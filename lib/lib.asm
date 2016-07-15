@@ -20,21 +20,17 @@ memocpy:
         push    rbp
         mov     rbp, rsp
 
-        push    rsi
-        push    rdi
-        push    rcx
-
-        mov     rdi, rcx    ; Destination
-        mov     rsi, rdx    ; Source
-        mov     rcx, r8     ; Counter
+        mov     rdi, rdi    ; Destination
+        mov     rsi, rsi    ; Source
+        mov     rcx, rdx    ; Counter
 .1:
         cmp     ecx, 0          ; 判断计数器
         jz      .2              ; 计数器为零时跳出
 
-        mov     al, [ds:esi]        ; ┓
+        mov     al, [ds:rsi]        ; ┓
         inc     esi                 ; ┃
                                     ; ┣ 逐字节移动
-        mov     byte [es:edi], al   ; ┃
+        mov     byte [es:rdi], al   ; ┃
         inc     edi                 ; ┛
 
         dec     ecx     ; 计数器减一
@@ -42,9 +38,6 @@ memocpy:
 .2:
         mov     eax, [ebp + 8]  ; 返回值
 
-        pop     rcx
-        pop     rdi
-        pop     rsi
         mov     rsp, rbp
         pop     rbp
 
@@ -52,20 +45,24 @@ memocpy:
 ; memcpy 结束-------------------------------------------------------------
 
 ; ========================================================================
-;                  void print(const char * pszinfo);
+;       PUBLIC void  print(const char* pszInfo, const char color);
 ; ========================================================================
 print:
         push    rbp
+        push    rax
         mov     ebp, esp
 
+        xor     rax, rax
+        mov     eax, esi        ; color
+        shl     ax, 8
+        and     al, 0x0F
         mov     rsi, rdi        ; pszInfo
         mov     edi, dword [disp_pos]
-        mov     ah, 0Fh
 .1:
         lodsb
         test    al, al
         jz      .2
-        cmp     al, 0Ah ; 是回车吗?
+        cmp     al, 0Ah         ; 是回车吗?
         jnz     .3
         push    rax
         mov     eax, edi
@@ -79,13 +76,14 @@ print:
         pop     rax
         jmp     .1
 .3:
-        mov     [gs:edi], ax
+        mov     [gs:rdi], ax
         add     edi, 2
         jmp     .1
 
 .2:
         mov     dword [disp_pos], edi
 
+        pop     rax
         pop     rbp
         ret
 ;----------------------------------------------------------------------------

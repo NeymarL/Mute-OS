@@ -1,10 +1,16 @@
+# Makefile for boot
+# 
+
 MAKE     = 	make -r
 LDFILE   = 	rule.ld
 DD 		 = 	dd
 NASM     =  nasm
+ASMFLAG  =  -I include/
 CC 		 =  gcc
 QEMU     =  qemu-system-i386
 RM		 =  rm
+
+TARGET   =  boot.bin loader.bin
 
 RAW 	 =  raw.img
 CONTAINER= 	image.img
@@ -15,12 +21,15 @@ BOOTDIR	 = 	.
 MOUNTDIR =  ../mnt
 ROOTDIR  =  ..
 
-default :
-	$(MAKE) bootloader
+everything : ${TARGET}
 
-bootloader : boot.asm loader.asm
-	$(NASM) boot.asm -o boot.bin
-	$(NASM) loader.asm -o loader.bin
+all : clean everything
+
+boot.bin : boot.asm include/load.inc include/fat12hdr.inc
+	$(NASM) $(ASMFLAG) -o $@ $<
+
+loader.bin : loader.asm include/load.inc include/fat12hdr.inc include/pm.inc
+	$(NASM) $(ASMFLAG) -o $@ $<
 
 kernel :
 	$(NASM) -f elf64 ${KERNELDIR}/kernel.asm -o ${KERNELDIR}/kernel.bin
@@ -48,5 +57,4 @@ debug : bootloader
 	$(QEMU) -s -S -drive file=${ROOTDIR}/${OSIMG},format=raw,index=0,if=floppy
 
 clean :
-	$(RM) *.bin
-	$(RM) *.img
+	$(RM) -f ${TARGET}
