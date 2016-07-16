@@ -8,7 +8,7 @@
 #include "func.h"
 
 /* 本文件内函数声明 */
-PRIVATE void init_idt_desc(unsigned char vector, u8 desc_type,
+PRIVATE void init_idt_desc(u16 vector, u8 desc_type,
                int_handler handler, unsigned char privilege);
 
 
@@ -29,6 +29,44 @@ void    stack_exception();
 void    general_protection();
 void    page_fault();
 void    copr_error();
+
+
+/*======================================================================*
+                            init_8259A
+ *======================================================================*/
+PUBLIC void init_8259A()
+{
+    /* Master 8259, ICW1. */
+    out_byte(INT_M_CTL, 0x11);
+
+    /* Slave  8259, ICW1. */
+    out_byte(INT_S_CTL, 0x11);
+
+    /* Master 8259, ICW2. 设置 '主8259' 的中断入口地址为 0x20. */
+    out_byte(INT_M_CTLMASK, INT_VECTOR_IRQ0);
+
+    /* Slave  8259, ICW2. 设置 '从8259' 的中断入口地址为 0x28 */
+    out_byte(INT_S_CTLMASK, INT_VECTOR_IRQ8);
+
+    /* Master 8259, ICW3. IR2 对应 '从8259'. */
+    out_byte(INT_M_CTLMASK, 0x4);
+
+    /* Slave  8259, ICW3. 对应 '主8259' 的 IR2. */
+    out_byte(INT_S_CTLMASK, 0x2);
+
+    /* Master 8259, ICW4. */
+    out_byte(INT_M_CTLMASK, 0x1);
+
+    /* Slave  8259, ICW4. */
+    out_byte(INT_S_CTLMASK, 0x1);
+
+    /* Master 8259, OCW1.  */
+    out_byte(INT_M_CTLMASK, 0xFF);
+
+    /* Slave  8259, OCW1.  */
+    out_byte(INT_S_CTLMASK, 0xFF);
+}
+
 
 /*======================================================================*
                             init_prot
@@ -92,16 +130,19 @@ PUBLIC void init_prot()
  *----------------------------------------------------------------------*
  初始化 386 中断门
  *======================================================================*/
-PRIVATE void init_idt_desc(unsigned char vector, u8 desc_type,
+PRIVATE void init_idt_desc(u16 vector, u8 desc_type,
               int_handler handler, unsigned char privilege)
 {
     GATE *  p_gate  = &idt[vector];
-    u32 base    = (u32)handler;
+    //u32 base    = (u32)handler;
+    u64 base    = (u64)handler;
     p_gate->offset_low  = base & 0xFFFF;
     p_gate->selector    = SELECTOR_KERNEL_CS;
-    p_gate->dcount      = 0;
+    //p_gate->dcount      = 0;
+    p_gate->ist         = 0;
     p_gate->attr        = desc_type | (privilege << 5);
-    p_gate->offset_high = (base >> 16) & 0xFFFF;
+    p_gate->offset_mid  = (base >> 16) & 0xFFFF;
+    p_gate->offset_high = (base >> 32) & 0x00000000FFFFFFFF;
 }
 
 /*======================================================================*

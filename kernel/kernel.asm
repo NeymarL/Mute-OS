@@ -74,7 +74,7 @@ _start: ;
     retf
 
 csinit:     ; “这个跳转指令强制使用刚刚初始化的结构”——<<OS:D&I 2nd>> P90.
-    ;ud2
+    ud2
     ;jmp 0x40:0
 
     ;push    0
@@ -143,11 +143,11 @@ copr_error:
     jmp     exception
 
 exception:
-    pop     rdi
-    pop     rsi
-    pop     rdx
-    pop     rcx
-    pop     r8
-    call    exception_handler
+    ;pop     rdi
+    ;pop     rsi
+    ;pop     rdx
+    ;pop     rcx
+    ;pop     r8
+    ;call    exception_handler
     add     esp, 8*2    ; 让栈顶指向 EIP，堆栈中从顶向下依次是：EIP、CS、EFLAGS
     hlt

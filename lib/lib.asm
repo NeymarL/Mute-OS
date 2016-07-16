@@ -97,7 +97,7 @@ print:
 out_byte:
         mov     edx, edi        ; port
         mov     eax, esi        ; value
-        shl     eax, 8
+        ;shl     eax, 8
         out     dx, al
         nop                     ; 一点延迟
         nop
