@@ -74,7 +74,7 @@ _start: ;
     retf
 
 csinit:     ; “这个跳转指令强制使用刚刚初始化的结构”——<<OS:D&I 2nd>> P90.
-    ud2
+    ;ud2
     ;jmp 0x40:0
 
     ;push    0
