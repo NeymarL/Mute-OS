@@ -27,7 +27,8 @@ LIBDIR 	 = 	lib
 ROOTDIR  =  .
 
 # this program
-OBJS 	 = 	kernel/kernel.o kernel/start.o lib/lib.o kernel/i8259.o
+OBJS 	 = 	kernel/kernel.o kernel/start.o lib/lib.o kernel/i8259.o kernel/global.o \
+			kernel/protect.o lib/stdlib.o
 BOOTBINS = 	boot/boot.bin boot/loader.bin
 KERNBINS =  kernel/kernel.bin
 RAW 	 =  raw.img
@@ -53,16 +54,27 @@ kernel/kernel.bin : ${OBJS}
 kernel/kernel.o : kernel/kernel.asm
 	$(NASM) $(ASMKFLAGS) -o $@ $<
 
-kernel/start.o : kernel/start.c include/const.h include/func.h include/type.h
+kernel/start.o : kernel/start.c include/const.h include/func.h include/type.h \
+			include/global.h
 	$(CC) $(CFLAGS) -o $@ $<
 
-kernel/i8259.o : kernel/i8259.c include/const.h include/func.h include/type.h
+kernel/i8259.o : kernel/i8259.c include/const.h include/func.h include/type.h \
+			include/global.h
+	$(CC) $(CFLAGS) -o $@ $<
+
+kernel/global.o : kernel/global.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+kernel/protect.o : kernel/protect.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 lib/lib.o : lib/lib.asm
 	$(NASM) $(ASMKFLAGS) -o $@ $<
 
-usb : img
+lib/stdlib.o : lib/stdlib.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+usb : $(OSIMG)
 	$(DD) if=${OSIMG} of=/dev/sdb
 
 ${RAW} : boot/loader.bin  kernel/kernel.bin
