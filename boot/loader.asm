@@ -335,6 +335,7 @@ ALIGN   32
 [BITS   32]
 
 %include    "lib32.inc"
+%include    "pages64.inc"
 
 LABEL_PM_START:
     mov     ax, SelectorVideo
@@ -355,7 +356,34 @@ LABEL_PM_START:
     call    DispStr
     add     esp, 4
     ; 启动分页
-    call    SetupPaging
+    ;call    SetupPaging
+
+    ; 进入 long-mode
+    ;   
+
+    ; 初始化 long-mode 页表结构
+    call    init_page
+
+    ; 加载 CR3 
+    mov     eax, 100000h
+    mov     cr3, eax
+
+    ; 开启 PAE
+    mov     eax, cr4
+    bts     eax, 5              ; CR4.PAE = 1
+    mov     cr4, eax
+
+    ; enable long-mode
+    mov     ecx, 0C0000080h
+    rdmsr
+    bts     eax, 8              ; IA32_EFER.LME =1
+    wrmsr
+
+    ; 开启 PE 和 paging
+    mov     eax, cr0
+    ;bts     eax, 0              ; CR0.PE =1
+    or      eax, 80000000h   
+    mov     cr0, eax            ; IA32_EFER.LMA = 1
 
     call    DispReturn
     push    szInitKern
@@ -364,7 +392,7 @@ LABEL_PM_START:
     add     esp, 4
 
     call    DispReturn
-    ;call    ShowMem
+    call    ShowMem
 
     ; 重新加载内核
     call    InitKernel

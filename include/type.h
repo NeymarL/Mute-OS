@@ -5,7 +5,7 @@
 #ifndef _MUTEOS_TYPE_H_
 #define _MUTEOS_TYPE_H_
 
-typedef unsigned long       u64;
+typedef unsigned long long  u64;
 typedef unsigned int        u32;
 typedef unsigned short      u16;
 typedef unsigned char       u8;
@@ -24,15 +24,16 @@ typedef struct s_descriptor     /* 共 8 个字节 */
 }DESCRIPTOR;
 
 /* 门描述符 */
-typedef struct s_gate
+typedef struct s_gate   /* 16 Bytes */
 {
     u16 offset_low;     /* Offset Low */
     u16 selector;       /* Selector */
     u8  ist;            /* Interrupt Stack Table */
     u8  attr;           /* P(1) DPL(2) DT(1) TYPE(4) */
-    u16 offset_mid;     /* Offset High */
-    u32 offset_high;
-}GATE;
+    u16 offset_mid;     /* Offset Mid */
+    u32 offset_high;    /* Offset High */
+    //u32 unused;         /* Unused */
+} GATE;
 
 
 #endif /* _MUTEOS_TYPE_H_ */

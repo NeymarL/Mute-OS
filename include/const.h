@@ -65,6 +65,7 @@
 
 /* 描述符类型值说明 */
 #define DA_32               0x4000  /* 32 位段              */
+#define DA_64               0x2000  /* 64 位段              */
 #define DA_LIMIT_4K         0x8000  /* 段界限粒度为 4K 字节  */
 #define DA_DPL0             0x00    /* DPL = 0              */
 #define DA_DPL1             0x20    /* DPL = 1              */

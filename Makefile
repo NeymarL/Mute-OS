@@ -12,7 +12,7 @@ LD   	 = 	ld
 DD 		 = 	dd
 NASM     =  nasm
 CC 		 =  gcc
-QEMU     =  qemu-system-i386
+QEMU     =  qemu-system-x86_64
 RM		 =  rm -f
 ASMBFLAGS=  -I boot/include/
 ASMKFLAGS=  -I include/ -f elf64
@@ -70,6 +70,7 @@ lib/lib.o : lib/lib.asm
 lib/stdlib.o : lib/stdlib.c
 	$(CC) $(CFLAGS) -o $@ $<
 
+
 usb : $(OSIMG)
 	$(DD) if=${OSIMG} of=/dev/sdb
 
@@ -86,7 +87,7 @@ ${OSIMG} : ${RAW} ${BOOTDIR}/boot.bin
 	cat ${BOOTDIR}/boot.bin ${CONTAINER} > ${OSIMG}
 
 run : ${OSIMG} 
-	$(QEMU) -drive file=${OSIMG},format=raw,index=0,if=floppy
+	$(QEMU) -drive file=${OSIMG},format=raw,index=0,if=floppy -monitor stdio
 
 debug : ${OSIMG}
 	$(QEMU) -s -S -drive file=${OSIMG},format=raw,index=0,if=floppy

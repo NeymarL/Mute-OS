@@ -29,6 +29,22 @@ void    stack_exception();
 void    general_protection();
 void    page_fault();
 void    copr_error();
+void    hwint00();
+void    hwint01();
+void    hwint02();
+void    hwint03();
+void    hwint04();
+void    hwint05();
+void    hwint06();
+void    hwint07();
+void    hwint08();
+void    hwint09();
+void    hwint10();
+void    hwint11();
+void    hwint12();
+void    hwint13();
+void    hwint14();
+void    hwint15();
 
 
 /*======================================================================*
@@ -61,7 +77,7 @@ PUBLIC void init_8259A()
     out_byte(INT_S_CTLMASK, 0x1);
 
     /* Master 8259, OCW1.  */
-    out_byte(INT_M_CTLMASK, 0xFF);
+    out_byte(INT_M_CTLMASK, 0xFD);
 
     /* Slave  8259, OCW1.  */
     out_byte(INT_S_CTLMASK, 0xFF);
@@ -123,6 +139,54 @@ PUBLIC void init_prot()
 
     init_idt_desc(INT_VECTOR_COPROC_ERR,    DA_386IGate,
               copr_error,       PRIVILEGE_KRNL);
+
+    init_idt_desc(INT_VECTOR_IRQ0 + 0,      DA_386IGate,
+              hwint00,          PRIVILEGE_KRNL);
+
+    init_idt_desc(INT_VECTOR_IRQ0 + 1,      DA_386IGate,
+              hwint01,          PRIVILEGE_KRNL);
+
+    init_idt_desc(INT_VECTOR_IRQ0 + 2,      DA_386IGate,
+              hwint02,          PRIVILEGE_KRNL);
+
+    init_idt_desc(INT_VECTOR_IRQ0 + 3,      DA_386IGate,
+              hwint03,          PRIVILEGE_KRNL);
+
+    init_idt_desc(INT_VECTOR_IRQ0 + 4,      DA_386IGate,
+              hwint04,          PRIVILEGE_KRNL);
+
+    init_idt_desc(INT_VECTOR_IRQ0 + 5,      DA_386IGate,
+              hwint05,          PRIVILEGE_KRNL);
+
+    init_idt_desc(INT_VECTOR_IRQ0 + 6,      DA_386IGate,
+              hwint06,          PRIVILEGE_KRNL);
+
+    init_idt_desc(INT_VECTOR_IRQ0 + 7,      DA_386IGate,
+              hwint07,          PRIVILEGE_KRNL);
+
+    init_idt_desc(INT_VECTOR_IRQ8 + 0,      DA_386IGate,
+              hwint08,          PRIVILEGE_KRNL);
+
+    init_idt_desc(INT_VECTOR_IRQ8 + 1,      DA_386IGate,
+              hwint09,          PRIVILEGE_KRNL);
+
+    init_idt_desc(INT_VECTOR_IRQ8 + 2,      DA_386IGate,
+              hwint10,          PRIVILEGE_KRNL);
+
+    init_idt_desc(INT_VECTOR_IRQ8 + 3,      DA_386IGate,
+              hwint11,          PRIVILEGE_KRNL);
+
+    init_idt_desc(INT_VECTOR_IRQ8 + 4,      DA_386IGate,
+              hwint12,          PRIVILEGE_KRNL);
+
+    init_idt_desc(INT_VECTOR_IRQ8 + 5,      DA_386IGate,
+              hwint13,          PRIVILEGE_KRNL);
+
+    init_idt_desc(INT_VECTOR_IRQ8 + 6,      DA_386IGate,
+              hwint14,          PRIVILEGE_KRNL);
+
+    init_idt_desc(INT_VECTOR_IRQ8 + 7,      DA_386IGate,
+              hwint15,          PRIVILEGE_KRNL);
 }
 
 /*======================================================================*
@@ -142,7 +206,8 @@ PRIVATE void init_idt_desc(u16 vector, u8 desc_type,
     p_gate->ist         = 0;
     p_gate->attr        = desc_type | (privilege << 5);
     p_gate->offset_mid  = (base >> 16) & 0xFFFF;
-    p_gate->offset_high = (base >> 32) & 0x00000000FFFFFFFF;
+    p_gate->offset_high = (base >> 32) & 0x0FFFFFFFF;
+    //p_gate->unused      = 0;
 }
 
 /*======================================================================*
@@ -150,10 +215,10 @@ PRIVATE void init_idt_desc(u16 vector, u8 desc_type,
  *----------------------------------------------------------------------*
  异常处理
  *======================================================================*/
-PUBLIC void exception_handler(int vec_no, int err_code, int eip, int cs, int eflags)
+PUBLIC void exception_handler(int vec_no, unsigned int err_code)
 {
     int i;
-    char text_color = 0x74; /* 灰底红字 */
+    char text_color = Red;
 
     char * err_msg[] = {
                 "#DE Divide Error",
@@ -179,24 +244,23 @@ PUBLIC void exception_handler(int vec_no, int err_code, int eip, int cs, int efl
     };
 
     /* 通过打印空格的方式清空屏幕的前五行，并把 disp_pos 清零 */
-    disp_pos = 0;
+    /*disp_pos = 0;
     for (i = 0; i < 80 * 5; i++) {
         print(" ", Black);
-    }
-    disp_pos = 0;
+    }*/
 
-    print("Exception! --> ", text_color);
-    print(err_msg[vec_no], text_color);
-    print("\n\n", text_color);
+    print("\nException! --> ", text_color);
+    print(err_msg[vec_no], text_color);   // Problem!!!!
+    print("\n", text_color);
 
-    print("EFLAGS:", text_color);
+    /*print("EFLAGS:", text_color);
     print_bit(eflags, text_color);
 
     print("CS:", text_color);
     print_bit(cs, text_color);
 
     print("EIP:", text_color);
-    print_bit(eip, text_color);
+    print_bit(eip, text_color);*/
 
     if (err_code != 0xFFFFFFFF){
         print("Error code:", text_color);
@@ -204,3 +268,12 @@ PUBLIC void exception_handler(int vec_no, int err_code, int eip, int cs, int efl
     }
 }
 
+/*======================================================================*
+                           spurious_irq
+ *======================================================================*/
+PUBLIC void spurious_irq(int irq)
+{
+        print("spurious_irq: ", White);
+        print_bit(irq, White);
+        print("\n", White);
+}

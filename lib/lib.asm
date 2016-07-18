@@ -3,9 +3,7 @@
 
 [BITS 64]
 
-[SECTION .data]
-disp_pos    dd  0
-
+extern  disp_pos
 
 [SECTION .text]
 
@@ -14,6 +12,8 @@ global  memocpy
 global  print
 global  out_byte
 global  in_byte
+global  init_8259A_asm
+global  DispInt
 
 
 ; ------------------------------------------------------------------------
@@ -114,4 +114,143 @@ in_byte:
         nop
         ret
 ; ========================================================================
+
+; ========================================================================
+;                 void init_8259A_asm();
+; ========================================================================
+init_8259A_asm:
+        mov     al, 0x11
+        out     0x20, al
+        nop
+        nop
+        mov     al, 0x11
+        out     0xA0, al
+        nop
+        nop
+        mov     al, 0x20
+        out     0x21, al
+        nop
+        nop
+        mov     al, 0x18
+        out     0xA1, al
+        nop
+        nop
+        mov     al, 0x4
+        out     0x21, al
+        nop
+        nop
+        mov     al, 0x2
+        out     0xA1, al
+        nop
+        nop
+        mov     al, 0x1
+        out     0x21, al
+        nop
+        nop
+        mov     al, 0x1
+        out     0xA1, al
+        nop
+        nop
+        mov     al, 0xFD
+        out     0x21, al
+        nop
+        nop
+        mov     al, 0xFF
+        out     0xA1, al
+        nop
+        nop
+        ret
+
+
+[BITS 32]
+; ------------------------------------------------------------------------
+; 显示 AL 中的数字
+; ------------------------------------------------------------------------
+DispAL:
+    push    ecx
+    push    edx
+    push    edi
+
+    mov edi, [disp_pos]
+
+    mov ah, 0Fh         ; 0000b: 黑底    1111b: 白字
+    mov dl, al
+    shr al, 4
+    mov ecx, 2
+.begin:
+    and al, 01111b
+    cmp al, 9
+    ja  .1
+    add al, '0'
+    jmp .2
+.1:
+    sub al, 0Ah
+    add al, 'A'
+.2:
+    mov [gs:edi], ax
+    add edi, 2
+
+    mov al, dl
+    loop    .begin
+    ;add    edi, 2
+
+    mov [disp_pos], edi
+
+    pop edi
+    pop edx
+    pop ecx
+
+    ret
+; DispAL 结束-------------------------------------------------------------
+
+
+; ------------------------------------------------------------------------
+; 显示一个整形数
+; ------------------------------------------------------------------------
+DispInt:
+    mov eax, [esp + 4]
+    shr eax, 24
+    call    DispAL
+
+    mov eax, [esp + 4]
+    shr eax, 16
+    call    DispAL
+
+    mov eax, [esp + 4]
+    shr eax, 8
+    call    DispAL
+
+    mov eax, [esp + 4]
+    call    DispAL
+
+    mov ah, 07h         ; 0000b: 黑底    0111b: 灰字
+    mov al, 'h'
+    push    edi
+    mov edi, [disp_pos]
+    mov [gs:edi], ax
+    add edi, 4
+    mov [disp_pos], edi
+    pop edi
+
+    ret
+; DispInt 结束------------------------------------------------------------
+
+
+;------------------------------------------------------
+; set_interrupt_handler(u16 vector, u8 desc_type,
+;             int_handler handler, unsigned char privilege)
+; input:
+;   rdi: vector,  rsi: desc_type, rdx : handler, rcx : privilege
+;------------------------------------------------------
+;set_interrupt_handler:
+;        sidt [idt_ptr]        
+;        mov rax, [idt_ptr + 2]                                  ; IDT base
+;        shl rdi, 4                                              ; vector * 16
+;        add rax, rdi
+;        mov [rax], rdx                                    ; offset [15:0]
+;        mov [rax + 4], rdx                                ; offset [63:16]
+;        mov DWORD [rax + 2], SELECTOR_KERNEL_CS           ; set selector
+;        shl rcx, 5
+;        mov BYTE [rax + 5], rsi | rcx                     ; Type=interrupt gate, P=1, DPL=0
+;        ret
 
