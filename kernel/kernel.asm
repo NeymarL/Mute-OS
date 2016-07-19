@@ -120,6 +120,22 @@ csinit:     ; “这个跳转指令强制使用刚刚初始化的结构”——
 
 ALIGN   16
 hwint00:                ; Interrupt routine for irq 0 (the clock).
+        pushad      ; `.
+        push    ds  ;  |
+        push    es  ;  | 保存原寄存器值
+        push    fs  ;  |
+        push    gs  ; /
+
+        inc     byte [gs:0]     ; 改变屏幕第 0 行, 第 0 列的字符
+        mov     al, EOI         ; `. reenable
+        out     INT_M_CTL, al   ; / master 8259
+        
+        pop     gs  ; `.
+        pop     fs  ;  |
+        pop     es  ;  | 恢复原寄存器值
+        pop     ds  ;  |
+        popad       ; /
+
         iretd
 
 ALIGN   16
