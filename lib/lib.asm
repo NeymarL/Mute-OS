@@ -12,8 +12,7 @@ global  memocpy
 global  print
 global  out_byte
 global  in_byte
-global  init_8259A_asm
-global  DispInt
+global  memoset
 
 
 ; ------------------------------------------------------------------------
@@ -52,7 +51,7 @@ memocpy:
         pop     ebp
 
         ret         ; 函数结束，返回
-; memcpy 结束-------------------------------------------------------------
+; memocpy 结束-------------------------------------------------------------
 
 ; ========================================================================
 ;       PUBLIC void  print(const char* pszInfo, const int color);
@@ -116,4 +115,36 @@ in_byte:
         ret
 ; ========================================================================
 
+; ------------------------------------------------------------------------
+; void memoset(void* p_dst, char ch, int size);
+; ------------------------------------------------------------------------
+memoset:
+    push    ebp
+    mov     ebp, esp
 
+    push    esi
+    push    edi
+    push    ecx
+
+    mov     edi, [ebp + 8]  ; Destination
+    mov     edx, [ebp + 12] ; Char to be putted
+    mov     ecx, [ebp + 16] ; Counter
+.1:
+    cmp     ecx, 0          ; 判断计数器
+    jz      .2              ; 计数器为零时跳出
+
+    mov     byte [edi], dl      ; ┓
+    inc     edi                 ; ┛
+
+    dec     ecx     ; 计数器减一
+    jmp     .1      ; 循环
+.2:
+
+    pop     ecx
+    pop     edi
+    pop     esi
+    mov     esp, ebp
+    pop     ebp
+
+    ret         ; 函数结束，返回
+; ------------------------------------------------------------------------

@@ -53,3 +53,18 @@ PUBLIC void print_bit(int input, char color)
     itoa(output, input);
     print(output, color);
 }
+
+
+/*======================================================================*
+                               delay
+ *======================================================================*/
+PUBLIC void delay(int time)
+{
+    int i, j, k;
+    for (k = 0; k < time; k++) {
+        for (i = 0; i < 1000; i++) {
+            for (j = 0; j < 10000; j++) {}
+        }
+    }
+}
+

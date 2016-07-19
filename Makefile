@@ -28,7 +28,7 @@ ROOTDIR  =  .
 
 # this program
 OBJS 	 = 	kernel/kernel.o kernel/start.o lib/lib.o kernel/global.o \
-			kernel/protect.o lib/stdlib.o
+			kernel/protect.o lib/stdlib.o kernel/main.o
 BOOTBINS = 	boot/boot.bin boot/loader.bin
 KERNBINS =  kernel/kernel.bin
 RAW 	 =  raw.img
@@ -62,6 +62,9 @@ kernel/global.o : kernel/global.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 kernel/protect.o : kernel/protect.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+kernel/main.o : kernel/main.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 lib/lib.o : lib/lib.asm

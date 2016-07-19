@@ -20,12 +20,26 @@
 #define PRIVILEGE_KRNL  0
 #define PRIVILEGE_TASK  1
 #define PRIVILEGE_USER  3
-
+/* RPL */
+#define RPL_KRNL    SA_RPL0
+#define RPL_TASK    SA_RPL1
+#define RPL_USER    SA_RPL3
+                            
 /* 8259A interrupt controller ports. */
 #define INT_M_CTL     0x20 /* I/O port for interrupt controller       <Master> */
 #define INT_M_CTLMASK 0x21 /* setting bits in this port disables ints <Master> */
 #define INT_S_CTL     0xA0 /* I/O port for second interrupt controller<Slave>  */
 #define INT_S_CTLMASK 0xA1 /* setting bits in this port disables ints <Slave>  */
+
+
+/* Number of tasks */
+#define NR_TASKS    1
+
+/* stacks of tasks */
+#define STACK_SIZE_TESTA    0x8000
+
+#define STACK_SIZE_TOTAL    STACK_SIZE_TESTA
+
 
 
 /* Define Color Scheme */
@@ -53,15 +67,35 @@
 #define INDEX_FLAT_C        1   // ┣ LOADER 里面已经确定了的.
 #define INDEX_FLAT_RW       2   // ┃
 #define INDEX_VIDEO         3   // ┛
+#define INDEX_TSS           4
+#define INDEX_LDT_FIRST     5
+
 /* 选择子 */
 #define SELECTOR_DUMMY         0        // ┓
 #define SELECTOR_FLAT_C     0x08        // ┣ LOADER 里面已经确定了的.
 #define SELECTOR_FLAT_RW    0x10        // ┃
 #define SELECTOR_VIDEO      (0x18+3)    // ┛<-- RPL=3
+#define SELECTOR_TSS        0x20        /* TSS                       */
+#define SELECTOR_LDT_FIRST  0x28
 
 #define SELECTOR_KERNEL_CS  SELECTOR_FLAT_C
 #define SELECTOR_KERNEL_DS  SELECTOR_FLAT_RW
+#define SELECTOR_KERNEL_GS  SELECTOR_VIDEO
 
+/* 每个任务有一个单独的 LDT, 每个 LDT 中的描述符个数: */
+#define LDT_SIZE        2
+
+/* 选择子类型值说明 */
+/* 其中, SA_ : Selector Attribute */
+#define SA_RPL_MASK 0xFFFC
+#define SA_RPL0     0
+#define SA_RPL1     1
+#define SA_RPL2     2
+#define SA_RPL3     3
+
+#define SA_TI_MASK  0xFFFB
+#define SA_TIG      0
+#define SA_TIL      4
 
 /* 描述符类型值说明 */
 #define DA_32               0x4000  /* 32 位段              */
@@ -108,5 +142,10 @@
 /* 中断向量 */
 #define INT_VECTOR_IRQ0             0x20
 #define INT_VECTOR_IRQ8             0x28
+
+/* 宏 */
+/* 线性地址 → 物理地址 */
+#define vir2phys(seg_base, vir) (u32)(((u32)(seg_base)) + (u32)(vir))
+
 
 #endif /* _MUTEOS_CONST_H_ */

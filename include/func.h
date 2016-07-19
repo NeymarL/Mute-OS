@@ -15,3 +15,8 @@ PUBLIC char* itoa(char * str, int num);
 PUBLIC void print_bit(int input, char color);
 PUBLIC void init_8259A_asm();
 PUBLIC void spurious_irq(int irq);  
+PUBLIC int kernel_main();
+PUBLIC void delay(int time);
+PUBLIC u32 seg2phys(u16 seg);
+PUBLIC void restart();
+PUBLIC void memoset(void* p_dst, char ch, int size);
