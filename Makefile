@@ -15,9 +15,9 @@ CC 		 =  gcc
 QEMU     =  qemu-system-x86_64
 RM		 =  rm -f
 ASMBFLAGS=  -I boot/include/
-ASMKFLAGS=  -I include/ -f elf64
-CFLAGS   =  -I include/ -c
-LDFLAGS  =  -s -Ttext ${ENTRYPOINT}
+ASMKFLAGS=  -I include/ -f elf32
+CFLAGS   =  -I include/ -c -m32
+LDFLAGS  =  -s -Ttext ${ENTRYPOINT} -m elf_i386
 
 # directories
 KERNELDIR= 	kernel
@@ -45,7 +45,7 @@ boot/boot.bin : boot/boot.asm boot/include/load.inc boot/include/fat12hdr.inc
 	$(NASM) $(ASMBFLAGS) -o $@ $<
 
 boot/loader.bin : boot/loader.asm boot/include/load.inc \
-			 boot/include/fat12hdr.inc boot/include/pm.inc boot/include/pages64.inc
+			 boot/include/fat12hdr.inc boot/include/pm.inc
 	$(NASM) $(ASMBFLAGS) -o $@ $<
 
 kernel/kernel.bin : ${OBJS}

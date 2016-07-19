@@ -24,13 +24,15 @@ typedef struct s_descriptor     /* 共 8 个字节 */
 }DESCRIPTOR;
 
 /* 门描述符 */
-typedef struct s_gate   /* 8 Bytes */
+typedef struct s_gate   /* 16 Bytes */
 {
     u16 offset_low;     /* Offset Low */
     u16 selector;       /* Selector */
-    u8  dcount;         /* Param */
+    u8  ist;            /* Interrupt Stack Table */
     u8  attr;           /* P(1) DPL(2) DT(1) TYPE(4) */
-    u16 offset_high;     /* Offset Mid */
+    u16 offset_mid;     /* Offset Mid */
+    u32 offset_high;    /* Offset High */
+    //u32 unused;         /* Unused */
 } GATE;
 
 

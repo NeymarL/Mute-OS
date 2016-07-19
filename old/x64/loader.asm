@@ -335,6 +335,7 @@ ALIGN   32
 [BITS   32]
 
 %include    "lib32.inc"
+%include    "pages64.inc"
 
 LABEL_PM_START:
     mov     ax, SelectorVideo
@@ -589,24 +590,25 @@ SetupPaging:
 InitKernel:
 ;[BITS   64]
         xor     esi, esi
-        mov     cx, word [BaseOfKernelFilePhyAddr + 2Ch]    ;`. ecx <- pELFHdr->e_phnum
+        mov     cx, word [BaseOfKernelFilePhyAddr + 38h]    ;`. ecx <- pELFHdr->e_phnum
         movzx   ecx, cx                                     ;/
-        mov     esi, dword [BaseOfKernelFilePhyAddr + 1Ch]  ;   esi <- pELFHdr->e_phoff
+        mov     esi, dword [BaseOfKernelFilePhyAddr + 20h]  ;   esi <- pELFHdr->e_phoff
         add     esi, BaseOfKernelFilePhyAddr                ;   esi <- OffsetOfKernel+pELFHdr->e_phoff
 .Begin:
         mov     eax, dword [esi]
         cmp     eax, 0                          ; PT_NULL
         jz      .NoAction
-        push    dword [esi + 010h]        ;size ;`.
-        mov     eax, [esi + 04h]                ; |
+        push    dword [esi + 020h]        ;size ;`.
+        mov     eax, [esi + 08h]                ; |
         add     eax, BaseOfKernelFilePhyAddr    ; | memcpy((void*)(pPHdr->p_vaddr),
         push    eax                       ;src  ; |      uchCode + pPHdr->p_offset,
-        push    dword [esi + 08h]         ;dst  ; |      pPHdr->p_filesz;
+        push    dword [esi + 10h]         ;dst  ; |      pPHdr->p_filesz;
         call    MemCpy                          ; |
         add     esp, 12                         ;/
 .NoAction:
-        add     esi, 020h                       ; esi += pELFHdr->e_phentsize
+        add     esi, 038h                       ; esi += pELFHdr->e_phentsize
         dec     ecx
+        ;call    DispInt2
         jnz     .Begin
 
         ret

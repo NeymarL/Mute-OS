@@ -7,6 +7,7 @@ SELECTOR_KERNEL_CS  equ 8
 extern  cstart
 extern  exception_handler
 extern  spurious_irq
+extern  DispInt
 
 
 ; 导入全局变量
@@ -78,6 +79,9 @@ _start: ;
     ; 因为编译器有可能编译出使用它们的代码, 而编译器默认它们是一样的. 比如串拷贝操作会用到 ds 和 es.
     ;
     ;  
+[BITS 64]
+
+    ;jmp     $
 
     ; 把 esp 从 LOADER 挪到 KERNEL
     mov     esp, StackTop   ; 堆栈在 bss 段中
@@ -90,10 +94,13 @@ _start: ;
 
     lidt    [idt_ptr]
 
-    jmp     SELECTOR_KERNEL_CS:csinit
+    ;jmp     SELECTOR_KERNEL_CS:csinit
+    push    word SELECTOR_KERNEL_CS
+    push    qword csinit
+    retf
 
 csinit:     ; “这个跳转指令强制使用刚刚初始化的结构”——<<OS:D&I 2nd>> P90.
-    ud2
+    ;ud2
     sti
     hlt
 
@@ -101,9 +108,8 @@ csinit:     ; “这个跳转指令强制使用刚刚初始化的结构”——
 ; 中断和异常 -- 硬件中断
 ; ---------------------------------
 %macro  hwint_master    1
-        push    %1
+        mov     esi, %1
         call    spurious_irq
-        add     esp, 4
         hlt
 %endmacro
 ; ---------------------------------
@@ -142,9 +148,8 @@ hwint07:                ; Interrupt routine for irq 7 (printer)
 
 ; ---------------------------------
 %macro  hwint_slave     1
-        push    %1
+        mov     esi, %1
         call    spurious_irq
-        add     esp, 4
         hlt
 %endmacro
 ; ---------------------------------
@@ -243,7 +248,9 @@ copr_error:
     jmp     exception
 
 exception:
+    pop     rdi
+    pop     rsi
     call    exception_handler
-    add     esp, 4*2    ; 让栈顶指向 EIP，堆栈中从顶向下依次是：EIP、CS、EFLAGS
+    ;add     esp, 4*2    ; 让栈顶指向 EIP，堆栈中从顶向下依次是：EIP、CS、EFLAGS
     ;iret
     hlt

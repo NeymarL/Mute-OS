@@ -1,51 +1,28 @@
-	.file	"i8259.c"
-	.text
-	.globl	init_8259A
-	.type	init_8259A, @function
-init_8259A:
-.LFB0:
-	.cfi_startproc
-	pushq	%rbp
-	.cfi_def_cfa_offset 16
-	.cfi_offset 6, -16
-	movq	%rsp, %rbp
-	.cfi_def_cfa_register 6
-	movl	$17, %esi
-	movl	$32, %edi
-	call	out_byte
-	movl	$17, %esi
-	movl	$160, %edi
-	call	out_byte
-	movl	$32, %esi
-	movl	$33, %edi
-	call	out_byte
-	movl	$40, %esi
-	movl	$161, %edi
-	call	out_byte
-	movl	$4, %esi
-	movl	$33, %edi
-	call	out_byte
-	movl	$2, %esi
-	movl	$161, %edi
-	call	out_byte
-	movl	$1, %esi
-	movl	$33, %edi
-	call	out_byte
-	movl	$1, %esi
-	movl	$161, %edi
-	call	out_byte
-	movl	$255, %esi
-	movl	$33, %edi
-	call	out_byte
-	movl	$255, %esi
-	movl	$161, %edi
-	call	out_byte
-	nop
-	popq	%rbp
-	.cfi_def_cfa 7, 8
-	ret
-	.cfi_endproc
-.LFE0:
-	.size	init_8259A, .-init_8259A
-	.ident	"GCC: (GNU) 5.3.0"
-	.section	.note.GNU-stack,"",@progbits
+
+start.o：     文件格式 elf32-i386
+
+
+Disassembly of section .text:
+
+00000000 <cstart>:
+   0:	55                   	push   %ebp
+   1:	89 e5                	mov    %esp,%ebp
+   3:	83 ec 08             	sub    $0x8,%esp
+   6:	83 ec 08             	sub    $0x8,%esp
+   9:	6a 03                	push   $0x3
+   b:	68 00 00 00 00       	push   $0x0
+  10:	e8 fc ff ff ff       	call   11 <cstart+0x11>
+  15:	83 c4 10             	add    $0x10,%esp
+  18:	83 ec 08             	sub    $0x8,%esp
+  1b:	6a 0e                	push   $0xe
+  1d:	68 0e 00 00 00       	push   $0xe
+  22:	e8 fc ff ff ff       	call   23 <cstart+0x23>
+  27:	83 c4 10             	add    $0x10,%esp
+  2a:	83 ec 08             	sub    $0x8,%esp
+  2d:	6a 0e                	push   $0xe
+  2f:	68 28 00 00 00       	push   $0x28
+  34:	e8 fc ff ff ff       	call   35 <cstart+0x35>
+  39:	83 c4 10             	add    $0x10,%esp
+  3c:	90                   	nop
+  3d:	c9                   	leave  
+  3e:	c3                   	ret    

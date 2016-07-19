@@ -8,7 +8,7 @@
 #include "func.h"
 
 /* 本文件内函数声明 */
-PRIVATE void init_idt_desc(u16 vector, u8 desc_type,
+PRIVATE void init_idt_desc(u8 vector, u8 desc_type,
                int_handler handler, unsigned char privilege);
 
 
@@ -194,20 +194,16 @@ PUBLIC void init_prot()
  *----------------------------------------------------------------------*
  初始化 386 中断门
  *======================================================================*/
-PRIVATE void init_idt_desc(u16 vector, u8 desc_type,
+PRIVATE void init_idt_desc(u8 vector, u8 desc_type,
               int_handler handler, unsigned char privilege)
 {
-    GATE *  p_gate  = &idt[vector];
-    //u32 base    = (u32)handler;
-    u64 base    = (u64)handler;
+    GATE *  p_gate      = &idt[vector];
+    u32 base            = (u32)handler;
     p_gate->offset_low  = base & 0xFFFF;
     p_gate->selector    = SELECTOR_KERNEL_CS;
-    //p_gate->dcount      = 0;
-    p_gate->ist         = 0;
+    p_gate->dcount      = 0;
     p_gate->attr        = desc_type | (privilege << 5);
-    p_gate->offset_mid  = (base >> 16) & 0xFFFF;
-    p_gate->offset_high = (base >> 32) & 0x0FFFFFFFF;
-    //p_gate->unused      = 0;
+    p_gate->offset_high = (base >> 16) & 0xFFFF;
 }
 
 /*======================================================================*
@@ -215,7 +211,7 @@ PRIVATE void init_idt_desc(u16 vector, u8 desc_type,
  *----------------------------------------------------------------------*
  异常处理
  *======================================================================*/
-PUBLIC void exception_handler(int vec_no, unsigned int err_code)
+PUBLIC void exception_handler(int vec_no, int err_code, int eip, int cs, int eflags)
 {
     int i;
     char text_color = Red;
@@ -244,23 +240,27 @@ PUBLIC void exception_handler(int vec_no, unsigned int err_code)
     };
 
     /* 通过打印空格的方式清空屏幕的前五行，并把 disp_pos 清零 */
-    /*disp_pos = 0;
-    for (i = 0; i < 80 * 5; i++) {
+    disp_pos = 0;
+    for (i = 0; i < 80 * 8; i++) {
         print(" ", Black);
-    }*/
+    }
+    disp_pos = 0;
 
     print("\nException! --> ", text_color);
     print(err_msg[vec_no], text_color);   // Problem!!!!
     print("\n", text_color);
 
-    /*print("EFLAGS:", text_color);
+    print("EFLAGS:", text_color);
     print_bit(eflags, text_color);
+    print("\n", text_color);
 
     print("CS:", text_color);
     print_bit(cs, text_color);
+    print("\n", text_color);
 
     print("EIP:", text_color);
-    print_bit(eip, text_color);*/
+    print_bit(eip, text_color);
+    print("\n", text_color);
 
     if (err_code != 0xFFFFFFFF){
         print("Error code:", text_color);
