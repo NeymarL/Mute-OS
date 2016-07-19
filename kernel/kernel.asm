@@ -79,9 +79,9 @@ _start: ;
     ; 因为编译器有可能编译出使用它们的代码, 而编译器默认它们是一样的. 比如串拷贝操作会用到 ds 和 es.
     ;
     ;  
-
 [BITS 64]
-    jmp     $
+
+    ;jmp     $
 
     ; 把 esp 从 LOADER 挪到 KERNEL
     mov     esp, StackTop   ; 堆栈在 bss 段中
@@ -93,20 +93,6 @@ _start: ;
     lgdt    [gdt_ptr]   ; 使用新的GDT
 
     lidt    [idt_ptr]
-
-    push    qword [idt_ptr]
-    call    DispInt
-    add     esp, 4
-    push    qword [idt_ptr + 4]
-    call    DispInt
-    add     esp, 4
-    push    qword [idt_ptr + 8]
-    call    DispInt
-    add     esp, 4
-    push    qword [idt_ptr + 12]
-    call    DispInt
-    add     esp, 4
-
 
     ;jmp     SELECTOR_KERNEL_CS:csinit
     push    word SELECTOR_KERNEL_CS

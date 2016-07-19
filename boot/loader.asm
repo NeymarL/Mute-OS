@@ -19,7 +19,7 @@
 ;                            段基址     段界限,           属性
 LABEL_GDT:          Descriptor 0,            0, 0                       ; 空描述符
 LABEL_DESC_FLAT_C:  Descriptor 0,      0fffffh, DA_CR|DA_32|DA_LIMIT_4K ;0-4G
-LABEL_DESC_FLAT_RW: Descriptor 0,      0fffffh, DA_DRW|DA_32|DA_LIMIT_4K;0-4G
+LABEL_DESC_FLAT_RW: Descriptor 0,    0fffffffh, DA_DRW|DA_32|DA_LIMIT_4K;0-4G
 LABEL_DESC_VIDEO:   Descriptor 0B8000h, 0ffffh, DA_DRW|DA_DPL3          ; 显存首地址
 
 GdtLen              equ $ - LABEL_GDT
@@ -356,43 +356,43 @@ LABEL_PM_START:
     call    DispStr
     add     esp, 4
     ; 启动分页
-    ;call    SetupPaging
+    call    SetupPaging
 
     ; 进入 long-mode
     ;   
-
+    ;mov     ax, SelectorFlatRW
+    ;mov     es, ax
     ; 初始化 long-mode 页表结构
-    call    init_page
+    ;call    init_page
 
     ; 加载 CR3 
-    mov     eax, 100000h
-    mov     cr3, eax
+    ;mov     eax, PageDirBase
+    ;mov     cr3, eax
 
     ; 开启 PAE
-    mov     eax, cr4
-    bts     eax, 5              ; CR4.PAE = 1
-    mov     cr4, eax
+    ;mov     eax, cr4
+    ;bts     eax, 5              ; CR4.PAE = 1
+    ;mov     cr4, eax
 
     ; enable long-mode
-    mov     ecx, 0C0000080h
-    rdmsr
-    bts     eax, 8              ; IA32_EFER.LME =1
-    wrmsr
+    ;mov     ecx, 0C0000080h     ; IA32_EFER
+    ;rdmsr
+    ;bts     eax, 8              ; IA32_EFER.LME =1
+    ;wrmsr
 
     ; 开启 PE 和 paging
-    mov     eax, cr0
+    ;mov     eax, cr0
     ;bts     eax, 0              ; CR0.PE =1
-    or      eax, 80000000h   
-    mov     cr0, eax            ; IA32_EFER.LMA = 1
+    ;bts     eax, 31   
+    ;mov     cr0, eax            ; IA32_EFER.LMA = 1
 
     call    DispReturn
     push    szInitKern
     mov     ah, 02h
     call    DispStr
     add     esp, 4
-
     call    DispReturn
-    call    ShowMem
+
 
     ; 重新加载内核
     call    InitKernel

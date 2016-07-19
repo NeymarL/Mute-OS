@@ -45,7 +45,7 @@ boot/boot.bin : boot/boot.asm boot/include/load.inc boot/include/fat12hdr.inc
 	$(NASM) $(ASMBFLAGS) -o $@ $<
 
 boot/loader.bin : boot/loader.asm boot/include/load.inc \
-			 boot/include/fat12hdr.inc boot/include/pm.inc
+			 boot/include/fat12hdr.inc boot/include/pm.inc boot/include/pages64.inc
 	$(NASM) $(ASMBFLAGS) -o $@ $<
 
 kernel/kernel.bin : ${OBJS}
