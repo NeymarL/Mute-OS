@@ -28,7 +28,10 @@ ROOTDIR  =  .
 
 # this program
 OBJS 	 = 	kernel/kernel.o kernel/start.o lib/lib.o kernel/global.o \
-			kernel/protect.o lib/stdlib.o kernel/main.o kernel/clock.o
+			kernel/protect.o lib/stdlib.o kernel/main.o kernel/clock.o \
+			kernel/process.o kernel/syscall.o
+HEADERS  =  include/const.h include/func.h include/global.h include/process.h \
+			include/sconst.inc include/type.h
 BOOTBINS = 	boot/boot.bin boot/loader.bin
 KERNBINS =  kernel/kernel.bin
 RAW 	 =  raw.img
@@ -51,24 +54,29 @@ boot/loader.bin : boot/loader.asm boot/include/load.inc \
 kernel/kernel.bin : ${OBJS}
 	$(LD) $(LDFLAGS) -o $@ ${OBJS}
 
-kernel/kernel.o : kernel/kernel.asm
+kernel/kernel.o : kernel/kernel.asm $(HEADERS)
 	$(NASM) $(ASMKFLAGS) -o $@ $<
 
-kernel/start.o : kernel/start.c include/const.h include/func.h include/type.h \
-			include/global.h
+kernel/start.o : kernel/start.c $(HEADERS)
 	$(CC) $(CFLAGS) -o $@ $<
 
-kernel/global.o : kernel/global.c
+kernel/global.o : kernel/global.c $(HEADERS)
 	$(CC) $(CFLAGS) -o $@ $<
 
-kernel/protect.o : kernel/protect.c
+kernel/protect.o : kernel/protect.c $(HEADERS)
 	$(CC) $(CFLAGS) -o $@ $<
 
-kernel/main.o : kernel/main.c
+kernel/main.o : kernel/main.c $(HEADERS)
 	$(CC) $(CFLAGS) -o $@ $<
 
-kernel/clock.o : kernel/clock.c
+kernel/clock.o : kernel/clock.c $(HEADERS)
 	$(CC) $(CFLAGS) -o $@ $<
+
+kernel/process.o : kernel/process.c $(HEADERS)
+	$(CC) $(CFLAGS) -o $@ $<
+
+kernel/syscall.o : kernel/syscall.asm $(HEADERS)
+	$(NASM) $(ASMKFLAGS) -o $@ $<
 
 lib/lib.o : lib/lib.asm
 	$(NASM) $(ASMKFLAGS) -o $@ $<
