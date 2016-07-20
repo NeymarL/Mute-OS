@@ -29,9 +29,9 @@ ROOTDIR  =  .
 # this program
 OBJS 	 = 	kernel/kernel.o kernel/start.o lib/lib.o kernel/global.o \
 			kernel/protect.o lib/stdlib.o kernel/main.o kernel/clock.o \
-			kernel/process.o kernel/syscall.o
+			kernel/process.o kernel/syscall.o kernel/keyboard.o kernel/tty.o 
 HEADERS  =  include/const.h include/func.h include/global.h include/process.h \
-			include/sconst.inc include/type.h
+			include/sconst.inc include/type.h include/keyboard.h include/keymap.h
 BOOTBINS = 	boot/boot.bin boot/loader.bin
 KERNBINS =  kernel/kernel.bin
 RAW 	 =  raw.img
@@ -73,6 +73,12 @@ kernel/clock.o : kernel/clock.c $(HEADERS)
 	$(CC) $(CFLAGS) -o $@ $<
 
 kernel/process.o : kernel/process.c $(HEADERS)
+	$(CC) $(CFLAGS) -o $@ $<
+
+kernel/keyboard.o : kernel/keyboard.c $(HEADERS)
+	$(CC) $(CFLAGS) -o $@ $<
+
+kernel/tty.o : kernel/tty.c $(HEADERS)
 	$(CC) $(CFLAGS) -o $@ $<
 
 kernel/syscall.o : kernel/syscall.asm $(HEADERS)

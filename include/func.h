@@ -12,10 +12,13 @@ PUBLIC void out_byte(u16 port, u8 value);
 PUBLIC u8 in_byte(u16 port);
 PUBLIC void disable_irq(int irq);
 PUBLIC void enable_irq(int irq);
+PUBLIC void disable_int();
+PUBLIC void enable_int();
 
 /* lib/stdlib.c */
 PUBLIC char* itoa(char * str, int num);
 PUBLIC void print_bit(int input, char color);
+PUBLIC void clear_screen();
 
 /* kernel/clock.c */
 PUBLIC void clock_handler(int irq);
@@ -34,9 +37,14 @@ PUBLIC void spurious_irq(int irq);
 PUBLIC u32 seg2phys(u16 seg);
 PUBLIC void put_irq_handler(int irq, irq_handler handler);
 
+/* kernel/keyboard.c */
+PUBLIC void init_keyboard();
+PUBLIC void keyboard_handler(int irq);
+PUBLIC void keyboard_read();
 
 /* kernel/main.c */
 PUBLIC int kernel_main();
+PUBLIC void init_clock();
 PUBLIC void TestA();
 PUBLIC void TestB();
 
@@ -46,4 +54,9 @@ PUBLIC void schedule();
 
 /* syscall.asm */
 PUBLIC int get_ticks();
+
+
+/* kernel/tty.c */
+PUBLIC void task_tty();
+PUBLIC void init_tty();
 

@@ -63,13 +63,8 @@ PUBLIC int kernel_main()
     k_reenter = 0;
     ticks = 0;
 
-    put_irq_handler(CLOCK_IRQ, clock_handler);  /* 设定时钟中断处理程序 */
-    enable_irq(CLOCK_IRQ);                      /* 让8259A可以接收时钟中断 */
-
-    /* initialize 8253 PIT */
-    out_byte(TIMER_MODE, RATE_GENERATOR);
-    out_byte(TIMER0, (u8)(TIMER_FREQ / HZ));
-    out_byte(TIMER0, (u8)(TIMER_FREQ / HZ) >> 8);
+    init_clock();    
+    init_keyboard();
 
     p_proc_ready    = proc_table; 
     restart();
@@ -77,13 +72,29 @@ PUBLIC int kernel_main()
     while(1){}
 }
 
+
+/*======================================================================*
+                               init_clock
+ *======================================================================*/
+PUBLIC void init_clock()
+{
+    /* initialize 8253 PIT */
+    out_byte(TIMER_MODE, RATE_GENERATOR);
+    out_byte(TIMER0, (u8)(TIMER_FREQ / HZ));
+    out_byte(TIMER0, (u8)(TIMER_FREQ / HZ) >> 8);
+
+    put_irq_handler(CLOCK_IRQ, clock_handler);  /* 设定时钟中断处理程序 */
+    enable_irq(CLOCK_IRQ);                      /* 让8259A可以接收时钟中断 */    
+}
+
+
 /*======================================================================*
                                TestA
  *======================================================================*/
 void TestA()
 {
     while(1){
-        print("A ", Yellow);
+        //print("A ", Yellow);
         mili_delay(50);
     }
 }
@@ -93,9 +104,8 @@ void TestA()
  *======================================================================*/
 void TestB()
 {
-    int i = 1000;
     while(1){
-        print("B ", White);
+        //print("B ", White);
         mili_delay(50);
     }
 }

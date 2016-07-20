@@ -18,6 +18,9 @@ global  memoset
 global  strcpy
 global  enable_irq
 global  disable_irq
+global  enable_int
+global  disable_int
+
 
 ; ------------------------------------------------------------------------
 ; void* memocpy(void* es:pDest, void* ds:pSrc, int iSize);
@@ -251,3 +254,18 @@ enable_8:
         popf
         ret
 
+; ========================================================================
+;          void disable_int();
+; ========================================================================
+disable_int:
+    cli
+    ret
+
+; ========================================================================
+;          void enable_int();
+; ========================================================================
+enable_int:
+    sti
+    ret
+
+    
