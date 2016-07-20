@@ -32,15 +32,6 @@
 #define INT_S_CTLMASK 0xA1 /* setting bits in this port disables ints <Slave>  */
 
 
-/* Number of tasks */
-#define NR_TASKS    1
-
-/* stacks of tasks */
-#define STACK_SIZE_TESTA    0x8000
-
-#define STACK_SIZE_TOTAL    STACK_SIZE_TESTA
-
-
 
 /* Define Color Scheme */
 #define Black           0x00   

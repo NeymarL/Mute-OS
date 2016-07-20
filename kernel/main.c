@@ -6,8 +6,8 @@
 #include "const.h"
 #include "func.h"
 #include "global.h"
+#include "process.h"
 
-void TestA();
 
 /*======================================================================*
                             kernel_main
@@ -16,25 +16,49 @@ PUBLIC int kernel_main()
 {
     print("-----\"kernel_main\" begins-----\n", White);
 
-    PROCESS* p_proc = proc_table;
+    TASK*      p_task       = task_table;
+    PROCESS*   p_proc       = proc_table;
+    char*      p_task_stack = task_stack + STACK_SIZE_TOTAL;
+    u16        selector_ldt = SELECTOR_LDT_FIRST;
+    int i;
+    for (i = 0; i < NR_TASKS; i++) {
+        strcpy(p_proc->p_name, p_task->name);   // name of the process
+        p_proc->pid = i;            // pid
 
-    p_proc->ldt_sel = SELECTOR_LDT_FIRST;
-    memocpy(&p_proc->ldts[0], &gdt[SELECTOR_KERNEL_CS>>3], sizeof(DESCRIPTOR));
-    p_proc->ldts[0].attr1 = DA_C | PRIVILEGE_TASK << 5; // change the DPL
-    memocpy(&p_proc->ldts[1], &gdt[SELECTOR_KERNEL_DS>>3], sizeof(DESCRIPTOR));
-    p_proc->ldts[1].attr1 = DA_DRW | PRIVILEGE_TASK << 5;   // change the DPL
+        p_proc->ldt_sel = selector_ldt;
 
-    p_proc->regs.cs = (0 & SA_RPL_MASK & SA_TI_MASK) | SA_TIL | RPL_TASK;
-    p_proc->regs.ds = (8 & SA_RPL_MASK & SA_TI_MASK) | SA_TIL | RPL_TASK;
-    p_proc->regs.es = (8 & SA_RPL_MASK & SA_TI_MASK) | SA_TIL | RPL_TASK;
-    p_proc->regs.fs = (8 & SA_RPL_MASK & SA_TI_MASK) | SA_TIL | RPL_TASK;
-    p_proc->regs.ss = (8 & SA_RPL_MASK & SA_TI_MASK) | SA_TIL | RPL_TASK;
-    p_proc->regs.gs = (SELECTOR_KERNEL_GS & SA_RPL_MASK) | RPL_TASK;
-    p_proc->regs.eip= (u32)TestA;
-    p_proc->regs.esp= (u32) task_stack + STACK_SIZE_TOTAL;
-    p_proc->regs.eflags = 0x1202;   // IF=1, IOPL=1, bit 2 is always 1.
+        memocpy(&p_proc->ldts[0], &gdt[SELECTOR_KERNEL_CS >> 3],
+               sizeof(DESCRIPTOR));
+        p_proc->ldts[0].attr1 = DA_C | PRIVILEGE_TASK << 5;
+        memocpy(&p_proc->ldts[1], &gdt[SELECTOR_KERNEL_DS >> 3],
+               sizeof(DESCRIPTOR));
+        p_proc->ldts[1].attr1 = DA_DRW | PRIVILEGE_TASK << 5;
+        p_proc->regs.cs = ((8 * 0) & SA_RPL_MASK & SA_TI_MASK)
+            | SA_TIL | RPL_TASK;
+        p_proc->regs.ds = ((8 * 1) & SA_RPL_MASK & SA_TI_MASK)
+            | SA_TIL | RPL_TASK;
+        p_proc->regs.es = ((8 * 1) & SA_RPL_MASK & SA_TI_MASK)
+            | SA_TIL | RPL_TASK;
+        p_proc->regs.fs = ((8 * 1) & SA_RPL_MASK & SA_TI_MASK)
+            | SA_TIL | RPL_TASK;
+        p_proc->regs.ss = ((8 * 1) & SA_RPL_MASK & SA_TI_MASK)
+            | SA_TIL | RPL_TASK;
+        p_proc->regs.gs = (SELECTOR_KERNEL_GS & SA_RPL_MASK)
+            | RPL_TASK;
 
-    p_proc_ready    = proc_table;
+        p_proc->regs.eip = (u32)p_task->initial_eip;
+        p_proc->regs.esp = (u32)p_task_stack;
+        p_proc->regs.eflags = 0x1202; /* IF=1, IOPL=1 */
+
+        p_task_stack -= p_task->stacksize;
+        p_proc++;
+        p_task++;
+        selector_ldt += 1 << 3;
+    }
+
+    k_reenter = -1;
+
+    p_proc_ready    = proc_table; 
     restart();
 
     while(1){}
@@ -53,3 +77,18 @@ void TestA()
         delay(1);
     }
 }
+
+/*======================================================================*
+                               TestB
+ *======================================================================*/
+void TestB()
+{
+    int i = 1000;
+    while(1){
+        print("B", White);
+        print_bit(i++, Cyan);
+        print(".", Light_Gray);
+        delay(1);
+    }
+}
+

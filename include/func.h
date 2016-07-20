@@ -20,3 +20,8 @@ PUBLIC void delay(int time);
 PUBLIC u32 seg2phys(u16 seg);
 PUBLIC void restart();
 PUBLIC void memoset(void* p_dst, char ch, int size);
+PUBLIC void clock_handler(int irq);
+PUBLIC char* strcpy(char* p_dst, char* p_src);
+
+PUBLIC void TestA();
+PUBLIC void TestB();

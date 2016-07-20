@@ -13,6 +13,8 @@ typedef unsigned short      u16;
 typedef unsigned char       u8;
 
 typedef void  (*int_handler)  ();
+typedef void    (*task_f)   ();
+
 
 /* 存储段描述符/系统段描述符 */
 typedef struct s_descriptor     /* 共 8 个字节 */
@@ -64,37 +66,8 @@ typedef struct s_tss {
     u32 ldt;
     u16 trap;
     u16 iobase; /* I/O位图基址大于或等于TSS段界限，就表示没有I/O许可位图 */
-}TSS;
-
-/* 进程相关 */
-typedef struct s_stackframe {
-    u32 gs;         /* \                                    */
-    u32 fs;         /* |                                    */
-    u32 es;         /* |                                    */
-    u32 ds;         /* |                                    */
-    u32 edi;        /* |                                    */
-    u32 esi;        /* | pushed by save()                   */
-    u32 ebp;        /* |                                    */
-    u32 kernel_esp; /* <- 'popad' will ignore it            */
-    u32 ebx;        /* |                                    */
-    u32 edx;        /* |                                    */
-    u32 ecx;        /* |                                    */
-    u32 eax;        /* /                                    */
-    u32 retaddr;    /* return addr for kernel.asm::save()   */
-    u32 eip;        /* \                                    */
-    u32 cs;         /* |                                    */
-    u32 eflags;     /* | pushed by CPU during interrupt     */
-    u32 esp;        /* |                                    */
-    u32 ss;         /* /                                    */
-} STACK_FRAME;
+} TSS;
 
 
-typedef struct s_proc {
-    STACK_FRAME regs;          /* process registers saved in stack frame */
-    u16 ldt_sel;               /* gdt selector giving ldt base and limit */
-    DESCRIPTOR ldts[LDT_SIZE]; /* local descriptors for code and data */
-    u32 pid;                   /* process id passed in from MM */
-    char p_name[16];           /* name of the process */
-} PROCESS;
 
 #endif /* _MUTEOS_TYPE_H_ */
