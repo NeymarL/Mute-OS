@@ -22,6 +22,10 @@ PUBLIC void restart();
 PUBLIC void memoset(void* p_dst, char ch, int size);
 PUBLIC void clock_handler(int irq);
 PUBLIC char* strcpy(char* p_dst, char* p_src);
+PUBLIC void put_irq_handler(int irq, irq_handler handler);
+PUBLIC void disable_irq(int irq);
+PUBLIC void enable_irq(int irq);
+
 
 PUBLIC void TestA();
 PUBLIC void TestB();

@@ -78,10 +78,14 @@ PUBLIC void init_8259A()
     out_byte(INT_S_CTLMASK, 0x1);
 
     /* Master 8259, OCW1.  */
-    out_byte(INT_M_CTLMASK, 0xFE);
+    out_byte(INT_M_CTLMASK, 0xFF);
 
     /* Slave  8259, OCW1.  */
     out_byte(INT_S_CTLMASK, 0xFF);
+
+    for (int i = 0; i < NR_IRQ; i++) {
+        irq_table[i] = spurious_irq;
+    }
 }
 
 
@@ -331,3 +335,11 @@ PUBLIC u32 seg2phys(u16 seg)
     return (p_dest->base_high<<24 | p_dest->base_mid<<16 | p_dest->base_low);
 }
 
+/*======================================================================*
+                           put_irq_handler
+ *======================================================================*/
+PUBLIC void put_irq_handler(int irq, irq_handler handler)
+{
+    disable_irq(irq);
+    irq_table[irq] = handler;
+}

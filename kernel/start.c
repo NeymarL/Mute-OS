@@ -12,7 +12,7 @@
 PUBLIC void cstart()
 {
     print("\n\n\n\n\n\n\n[ OK ]", Green);
-    print(" Welcome to use MuteOS !!", Light_Magenta);
+    print(" Welcome to MuteOS !!", Light_Magenta);
     /* 将 LOADER 中的 GDT 复制到新的 GDT 中 */
     memocpy(&gdt,                               /* New GDT */
            (void*)(*((u32*)(&gdt_ptr[2]))),     /* Base  of Old GDT */

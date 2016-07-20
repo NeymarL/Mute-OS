@@ -1,6 +1,6 @@
 # MuteOS
 
-**Next-generation Operating System**
+**A Mini Operating System**
 
 My website : http://www.liuhe.website
 

@@ -20,3 +20,4 @@ PUBLIC  TASK task_table[NR_TASKS] = {
     {TestB, STACK_SIZE_TESTB, "TestB"}
 };
 
+PUBLIC  irq_handler     irq_table[NR_IRQ];
