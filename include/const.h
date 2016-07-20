@@ -164,4 +164,6 @@
 #define TIMER_FREQ     1193182L /* clock frequency for timer in PC and AT */
 #define HZ             100      /* clock freq (software settable on IBM-PC) */
 
+#define TICK_BIAS      82       /* 为了凑一秒钟而必须乘的系数 */
+
 #endif /* _MUTEOS_CONST_H_ */

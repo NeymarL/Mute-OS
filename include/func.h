@@ -42,6 +42,7 @@ PUBLIC void TestB();
 
 /* kernel/process.c */
 PUBLIC int sys_get_ticks();
+PUBLIC void schedule();
 
 /* syscall.asm */
 PUBLIC int get_ticks();

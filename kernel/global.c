@@ -16,8 +16,8 @@ PUBLIC  PROCESS         proc_table[NR_TASKS];
 PUBLIC  char            task_stack[STACK_SIZE_TOTAL];
 
 PUBLIC  TASK task_table[NR_TASKS] = {
-    {TestA, STACK_SIZE_TESTA, "TestA"},
-    {TestB, STACK_SIZE_TESTB, "TestB"}
+    {TestA, STACK_SIZE_TESTA, "TestA", 15 },
+    {TestB, STACK_SIZE_TESTB, "TestB", 5 }
 };
 
 PUBLIC  irq_handler     irq_table[NR_IRQ];

@@ -54,6 +54,10 @@ PUBLIC int kernel_main()
         p_proc++;
         p_task++;
         selector_ldt += 1 << 3;
+
+        /* init priority */
+        proc_table[i].priority = task_table[i].priority;
+        proc_table[i].ticks = proc_table[i].priority * TICK_BIAS;
     }
 
     k_reenter = 0;
@@ -80,7 +84,7 @@ void TestA()
 {
     while(1){
         print("A ", Yellow);
-        delay(1);
+        mili_delay(50);
     }
 }
 
@@ -92,7 +96,7 @@ void TestB()
     int i = 1000;
     while(1){
         print("B ", White);
-        delay(1);
+        mili_delay(50);
     }
 }
 
