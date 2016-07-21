@@ -55,17 +55,5 @@ PUBLIC void print_bit(int input, char color)
 }
 
 
-/*======================================================================*
-                               clear_screen
- *======================================================================*/
-PUBLIC void clear_screen()
-{
-    disp_pos = 0;
-    for (int i = 0; i <= 25; i++) {
-        for (int j = 0; j <= 80; j++) {
-            print(" ", Black);
-        }
-    }
-    disp_pos = 0;
-}
+
 

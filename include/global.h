@@ -10,6 +10,9 @@
 #endif
 
 #include "process.h"
+#include "console.h"
+#include "tty.h"
+
 
 EXTERN  int         disp_pos;
 EXTERN  u8          gdt_ptr[6]; /* 0~15:Limit  16~47:Base */
@@ -23,8 +26,12 @@ EXTERN  PROCESS*    p_proc_ready;
 EXTERN  int         k_reenter;
 EXTERN  int         ticks;
 
+EXTERN  int         nr_current_console;
+
 extern  PROCESS     proc_table[];
 extern  char        task_stack[];
 extern  TASK        task_table[];
 extern  irq_handler irq_table[];
+extern  TTY         tty_table[];
+extern  CONSOLE     console_table[];
 

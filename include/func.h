@@ -3,6 +3,10 @@
  * Global functions declarition
  */
 
+#include "console.h"
+#include "tty.h"
+
+
 /* lib/lib.asm */
 PUBLIC void* memocpy(void* pDst, void* pSrc, int iSize);
 PUBLIC void memoset(void* p_dst, char ch, int size);
@@ -18,7 +22,6 @@ PUBLIC void enable_int();
 /* lib/stdlib.c */
 PUBLIC char* itoa(char * str, int num);
 PUBLIC void print_bit(int input, char color);
-PUBLIC void clear_screen();
 
 /* kernel/clock.c */
 PUBLIC void clock_handler(int irq);
@@ -40,7 +43,7 @@ PUBLIC void put_irq_handler(int irq, irq_handler handler);
 /* kernel/keyboard.c */
 PUBLIC void init_keyboard();
 PUBLIC void keyboard_handler(int irq);
-PUBLIC void keyboard_read();
+PUBLIC void keyboard_read(TTY* p_tty);
 
 /* kernel/main.c */
 PUBLIC int kernel_main();
@@ -58,5 +61,14 @@ PUBLIC int get_ticks();
 
 /* kernel/tty.c */
 PUBLIC void task_tty();
-PUBLIC void init_tty();
+PUBLIC void init_tty(TTY* p_tty);
+PUBLIC void in_process(TTY* p_tty ,u32 key);
+
+/* kernel/console.c */
+PUBLIC void out_char(CONSOLE* p_con, char ch, int color);
+PUBLIC int is_current_console(CONSOLE* p_con);
+PUBLIC void clear_screen(CONSOLE* p_con);
+PUBLIC void init_screen(TTY* p_tty);
+PUBLIC void out_char(CONSOLE* p_con, char ch, int color);
+PUBLIC void out_string(CONSOLE* p_con, char* str, int color);
 

@@ -9,6 +9,8 @@
 #include "func.h"
 #include "global.h"
 #include "process.h"
+#include "console.h"
+#include "tty.h"
 
 
 PUBLIC  PROCESS         proc_table[NR_TASKS];
@@ -24,3 +26,6 @@ PUBLIC  irq_handler     irq_table[NR_IRQ];
 PUBLIC  system_call     sys_call_table[NR_SYS_CALL] = {
     sys_get_ticks
 };
+
+PUBLIC  TTY             tty_table[NR_CONSOLES];
+PUBLIC  CONSOLE         console_table[NR_CONSOLES];

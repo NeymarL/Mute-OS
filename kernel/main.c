@@ -14,7 +14,8 @@
  *======================================================================*/
 PUBLIC int kernel_main()
 {
-    print("-----\"kernel_main\" begins-----\n", White);
+    print("[ OK ]", Green);
+    print(" kernel_main begins\n", White);
 
     TASK*      p_task       = task_table;
     PROCESS*   p_proc       = proc_table;
