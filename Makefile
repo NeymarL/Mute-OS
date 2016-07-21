@@ -113,7 +113,7 @@ debug : ${OSIMG}
 	$(QEMU) -s -S -drive file=${OSIMG},format=raw,index=0,if=floppy
 
 clean :
-	$(RM)  ${OBJS} ${RAW} ${CONTAINER}
+	$(RM)  ${OBJS} ${RAW} ${CONTAINER} ${BOOTBINS} ${KERNBINS}
 
 realclean :
 	$(RM) ${TARGET} ${OBJS} ${BOOTBINS} ${KERNBINS} ${RAW} ${CONTAINER}
