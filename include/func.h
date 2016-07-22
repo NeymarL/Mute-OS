@@ -71,4 +71,6 @@ PUBLIC void clear_screen(CONSOLE* p_con);
 PUBLIC void init_screen(TTY* p_tty);
 PUBLIC void out_char(CONSOLE* p_con, char ch, int color);
 PUBLIC void out_string(CONSOLE* p_con, char* str, int color);
+PUBLIC void select_console(int nr_console);
+PUBLIC void scroll_screen(CONSOLE* p_con, int direction);
 

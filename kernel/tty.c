@@ -43,7 +43,7 @@ PUBLIC void task_tty()
         init_tty(p_tty);
     }
 
-    nr_current_console = 0;
+    select_console(0);
     while (1) {
         for (p_tty = TTY_FIRST; p_tty < TTY_END; p_tty++) {
             tty_do_read(p_tty);
@@ -73,23 +73,28 @@ PUBLIC void in_process(TTY* p_tty, u32 key)
             int raw_code = key & MASK_RAW;
             switch(raw_code) {
                 case UP:
-                    if ((key & FLAG_SHIFT_L) || (key & FLAG_SHIFT_R)) {
-                        disable_int();
-                        out_byte(CRTC_ADDR_REG, START_ADDR_H);
-                        out_byte(CRTC_DATA_REG, ((80*15) >> 8) & 0xFF);
-                        out_byte(CRTC_ADDR_REG, START_ADDR_L);
-                        out_byte(CRTC_DATA_REG, (80*15) & 0xFF);
-                        enable_int();
+                    if ((key & SHIFT_L) || (key & SHIFT_R)) {
+                        scroll_screen(p_tty->p_console, SCR_UP);
                     }
                     break;
                 case DOWN:
                     if ((key & FLAG_SHIFT_L) || (key & FLAG_SHIFT_R)) {
-                        /* Shift+Down, do nothing */
+                        scroll_screen(p_tty->p_console, SCR_DN);
+                    }
+                    break;
+                case F1:
+                case F2:
+                case F3:
+                    if ((key & FLAG_ALT_L) || (key & FLAG_ALT_R)) {
+                        select_console(raw_code - F1);
                     }
                     break;
                 case ENTER:
                     out_string(p_tty->p_console, "\n> ", Blue);
                     out_string(p_tty->p_console, "$ ", Light_Green);
+                    break;
+                case BACKSPACE:
+                    out_char(p_tty->p_console, '\b', White);
                     break;
                 default:
                     break;
