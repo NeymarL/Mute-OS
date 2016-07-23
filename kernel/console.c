@@ -60,8 +60,8 @@ PUBLIC void select_console(int nr_console)
     }
     nr_current_console = nr_console;
 
-    set_cursor(console_table[nr_console].cursor);
     set_video_start_addr(console_table[nr_console].current_start_addr);
+    set_cursor(console_table[nr_console].cursor);
 }
 
 
@@ -83,7 +83,7 @@ PUBLIC void out_char(CONSOLE* p_con, char ch, int color)
             }
             break;
         case '\b':
-            row = (p_con->cursor - p_con->current_start_addr) / SCREEN_WIDTH;
+            row = (p_con->cursor - p_con->original_addr) / SCREEN_WIDTH;
             column = p_con->cursor - row * SCREEN_WIDTH;
             if (column > 4) {
                 p_con->cursor--;

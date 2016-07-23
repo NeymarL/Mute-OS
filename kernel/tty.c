@@ -103,6 +103,25 @@ PUBLIC void in_process(TTY* p_tty, u32 key)
 }
 
 
+PUBLIC void tty_write(TTY* p_tty, char* buf, int len)
+{
+    char* p = buf;
+    int i = len;
+
+    while (i > 0) {
+        out_char(p_tty->p_console, *p++, White);
+        i--;
+    }
+}
+
+PUBLIC int sys_write(char* buf, int len, PROCESS* p_proc)
+{
+    //tty_write(&tty_table[nr_current_console], buf, len);
+    tty_write(&tty_table[p_proc->nr_tty], buf, len);
+    return 0;
+}
+
+
 
 PRIVATE void tty_do_read(TTY* p_tty)
 {

@@ -5,6 +5,7 @@
 
 #include "console.h"
 #include "tty.h"
+#include "process.h"
 
 
 /* lib/lib.asm */
@@ -22,6 +23,9 @@ PUBLIC void enable_int();
 /* lib/stdlib.c */
 PUBLIC char* itoa(char * str, int num);
 PUBLIC void print_bit(int input, char color);
+PUBLIC int printf(const char* fmt, ...);
+PUBLIC char* itoa10(char* str, int num);
+PUBLIC int strlen(char* str);
 
 /* kernel/clock.c */
 PUBLIC void clock_handler(int irq);
@@ -48,7 +52,6 @@ PUBLIC void keyboard_read(TTY* p_tty);
 /* kernel/main.c */
 PUBLIC int kernel_main();
 PUBLIC void init_clock();
-PUBLIC void TestA();
 PUBLIC void TestB();
 
 /* kernel/process.c */
@@ -57,12 +60,14 @@ PUBLIC void schedule();
 
 /* syscall.asm */
 PUBLIC int get_ticks();
-
+PUBLIC void write(char* buf, int len);
 
 /* kernel/tty.c */
 PUBLIC void task_tty();
 PUBLIC void init_tty(TTY* p_tty);
 PUBLIC void in_process(TTY* p_tty ,u32 key);
+PUBLIC int  sys_write(char* buf, int len, PROCESS* p_proc);
+PUBLIC void tty_write(TTY* p_tty, char* buf, int len);
 
 /* kernel/console.c */
 PUBLIC void out_char(CONSOLE* p_con, char ch, int color);

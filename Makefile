@@ -16,7 +16,7 @@ QEMU     =  qemu-system-x86_64
 RM		 =  rm -f
 ASMBFLAGS=  -I boot/include/
 ASMKFLAGS=  -I include/ -f elf32
-CFLAGS   =  -I include/ -c -m32
+CFLAGS   =  -I include/ -c -m32 -fno-builtin
 LDFLAGS  =  -s -Ttext ${ENTRYPOINT} -m elf_i386
 
 # directories
