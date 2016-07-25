@@ -69,14 +69,15 @@ PUBLIC int kernel_main()
         p_proc->regs.eflags = eflags;
 
         p_task_stack -= p_task->stacksize;
+ 
+        /* init priority */
+        proc_table[i].priority = p_task->priority;
+        proc_table[i].ticks = proc_table[i].priority * TICK_BIAS;
+        proc_table[i].nr_tty = 0;
+
         p_proc++;
         p_task++;
         selector_ldt += 1 << 3;
-
-        /* init priority */
-        proc_table[i].priority = task_table[i].priority;
-        proc_table[i].ticks = proc_table[i].priority * TICK_BIAS;
-        proc_table[i].nr_tty = 0;
     }
 
     k_reenter = 0;
