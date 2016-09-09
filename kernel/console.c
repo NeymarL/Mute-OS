@@ -106,7 +106,9 @@ PUBLIC void out_char(CONSOLE* p_con, char ch, int color)
     while (p_con->cursor >= p_con->current_start_addr + SCREEN_SIZE) {
         scroll_screen(p_con, SCR_DN);
     }
-    flush(p_con);
+    if (p_con == console_table + nr_current_console){
+        flush(p_con);
+    }
 }
 
 
