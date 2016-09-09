@@ -16,7 +16,7 @@ if you hava installed [qemu](http://wiki.qemu.org/Main_Page), you can run with i
 sudo make run
 ```
 
-else you can use `dd` command write it to a usb disk.
+otherwise you can use `dd` command write it to a usb disk.
 
 
 
