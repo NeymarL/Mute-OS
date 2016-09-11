@@ -5,6 +5,7 @@
 ## Features
 
 * Lightweight
+* Monolithic kernel
 * Multi-process
 * Multi-console
 
