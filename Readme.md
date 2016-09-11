@@ -11,7 +11,7 @@
 
 ## Hardware Requirement
 
-CPU with x86 and x84-64 architectures. 
+CPU with x86 or x84-64 architectures. 
 
 
 ## Installation
