@@ -2,22 +2,24 @@
 
 **A Mini Operating System**
 
-Some Features:
+## Features
 
 * Lightweight
 * Multi-process
 * Multi-console
 
 
-## What hardware dose it run?
+## Hardware Requirement
 
-x86 and x84-64 architectures. 
+CPU with x86 and x84-64 architectures. 
 
 
 ## Installation
 
 Make the OS image file `MuteOS.img`:
 ```
+cd /path/to/Mute-OS
+mkdir mnt
 sudo make
 ```
 
@@ -36,6 +38,8 @@ otherwise you can use `dd` command write it to a usb disk and then use BIOS to b
 ![MuteOS2](http://www.liuhe.website/images/MuteOS2.png)
 
 
-My website : http://www.liuhe.website
+## More Information
+
+My website : https://www.liuhe.website
 
 
