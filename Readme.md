@@ -19,8 +19,8 @@ CPU with x86 or x84-64 architectures.
 
 Make the OS image file `MuteOS.img`:
 ```
-cd /path/to/Mute-OS
-mkdir mnt
+git clone https://github.com/NeymarL/Muse-OS.git
+cd Mute-OS
 sudo make
 ```
 

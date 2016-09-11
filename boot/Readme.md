@@ -4,7 +4,7 @@ Make the boot sector, load kernel to memeory and jump to protected mode.
 
 ## File Structures
 
-* `include` conlude all the `.inc` files that `boot.asm` and `loader.asm` will use
+* `include` include all the `.inc` files that `boot.asm` and `loader.asm` will use
     * `fat12hdr.inc`  the header of FAT12 disk
     * `lib32.inc`  some useful functions for real mode and proctected mode
     * `load.inc`  some constant that `boot.asm` and `loader.asm` both will use
