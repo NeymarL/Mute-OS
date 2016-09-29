@@ -105,6 +105,21 @@ PUBLIC int printf(const char* fmt, ...)
     return i;
 }
 
+/*======================================================================
+                clear_screen
+ *======================================================================*/
+PUBLIC void clear()
+{
+    clscreen();
+}
+
+PUBLIC char keyboard_input()
+{
+    char key = sys_char;
+    sys_char = 0;
+    return key;
+}
+
 
 /*======================================================================*
                 vsprintf

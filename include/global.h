@@ -28,6 +28,8 @@ EXTERN  int         ticks;
 
 EXTERN  int         nr_current_console;
 
+EXTERN  int         sys_char;
+
 extern  PROCESS     proc_table[];
 extern  char        task_stack[];
 extern  TASK        task_table[];

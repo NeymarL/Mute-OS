@@ -113,10 +113,15 @@ PUBLIC void init_clock()
  *======================================================================*/
 void TestB()
 {
+    printf("<Ticks %d>", get_ticks());
+    mili_delay(500);
+    clear();
+    disable_tty_output();
     while(1){
-        //out_char(&console_table[nr_current_console], 'c', White);
-        printf("<Ticks %d>", get_ticks());
-        mili_delay(500);
+        char ch = keyboard_input();
+        if (ch) {
+            printf("%s", ch);
+        }
     }
 }
 

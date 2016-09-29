@@ -26,6 +26,8 @@ PUBLIC void print_bit(int input, char color);
 PUBLIC int printf(const char* fmt, ...);
 PUBLIC char* itoa10(char* str, int num);
 PUBLIC int strlen(char* str);
+PUBLIC void clear();
+PUBLIC char keyboard_input();
 
 /* kernel/clock.c */
 PUBLIC void clock_handler(int irq);
@@ -61,6 +63,10 @@ PUBLIC void schedule();
 /* syscall.asm */
 PUBLIC int get_ticks();
 PUBLIC void write(char* buf, int len);
+PUBLIC void clscreen();
+PUBLIC void disable_tty_output();
+PUBLIC void enable_tty_output();
+PUBLIC int get_key();
 
 /* kernel/tty.c */
 PUBLIC void task_tty();
@@ -68,11 +74,15 @@ PUBLIC void init_tty(TTY* p_tty);
 PUBLIC void in_process(TTY* p_tty ,u32 key);
 PUBLIC int  sys_write(char* buf, int len, PROCESS* p_proc);
 PUBLIC void tty_write(TTY* p_tty, char* buf, int len);
+PUBLIC void sys_disable_tty_output(PROCESS* p_proc);
+PUBLIC void sys_enable_tty_output(PROCESS* p_proc);
+PUBLIC void sys_read_tty(PROCESS* p_proc);
 
 /* kernel/console.c */
 PUBLIC void out_char(CONSOLE* p_con, char ch, int color);
 PUBLIC int is_current_console(CONSOLE* p_con);
 PUBLIC void clear_screen(CONSOLE* p_con);
+PUBLIC void sys_clear(PROCESS* p_proc);
 PUBLIC void init_screen(TTY* p_tty);
 PUBLIC void out_char(CONSOLE* p_con, char ch, int color);
 PUBLIC void out_string(CONSOLE* p_con, char* str, int color);

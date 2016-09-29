@@ -17,7 +17,7 @@ typedef struct s_tty
     u32*    p_inbuf_head;           /* 指向缓冲区中下一个空闲位置 */
     u32*    p_inbuf_tail;           /* 指向键盘任务应处理的键值 */
     int     inbuf_count;            /* 缓冲区中已经填充了多少 */
-
+    u8      disable_output;
     struct s_console *  p_console;
 }TTY;
 

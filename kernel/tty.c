@@ -25,7 +25,7 @@ PUBLIC void init_tty(TTY* p_tty)
 {
     p_tty->inbuf_count = 0;
     p_tty->p_inbuf_head = p_tty->p_inbuf_tail = p_tty->in_buf;
-
+    p_tty->disable_output = 0;
     init_screen(p_tty);
 }
 
@@ -59,6 +59,11 @@ PUBLIC void task_tty()
 PUBLIC void in_process(TTY* p_tty, u32 key)
 {
         char output[2] = {'\0', '\0'};
+
+        if (p_tty->disable_output) {
+            sys_char = key;
+            return;
+        }
 
         if (!(key & FLAG_EXT)) {
             if (p_tty->inbuf_count < TTY_IN_BYTES) {
@@ -121,6 +126,15 @@ PUBLIC int sys_write(char* buf, int len, PROCESS* p_proc)
     return 0;
 }
 
+PUBLIC void sys_disable_tty_output(PROCESS* p_proc)
+{
+    tty_table[p_proc->nr_tty].disable_output = 1;
+}
+
+PUBLIC void sys_enable_tty_output(PROCESS* p_proc)
+{
+    tty_table[p_proc->nr_tty].disable_output = 0;
+}
 
 
 PRIVATE void tty_do_read(TTY* p_tty)
@@ -132,15 +146,21 @@ PRIVATE void tty_do_read(TTY* p_tty)
 
 PRIVATE void tty_do_write(TTY* p_tty)
 {
-    if (p_tty->inbuf_count) {
+    if (p_tty->inbuf_count && !p_tty->disable_output) {
         char ch = *(p_tty->p_inbuf_tail);
         p_tty->p_inbuf_tail++;
         if (p_tty->p_inbuf_tail == p_tty->in_buf + TTY_IN_BYTES) {
             p_tty->p_inbuf_tail = p_tty->in_buf;
         }
         p_tty->inbuf_count--;
-
+        
         out_char(p_tty->p_console, ch, DEFAULT_CHAR_COLOR);
     }
+}
+
+
+PUBLIC void sys_read_tty(PROCESS* p_proc)
+{
+
 }
 

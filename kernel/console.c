@@ -130,11 +130,21 @@ PUBLIC void clear_screen(CONSOLE* p_con)
 {
     p_con->cursor = 0;
     for (int i = 0; i <= 25; i++) {
-        for (int j = 0; j <= 80; j++) {
+        for (int j = 0; j <= 40; j++) {
             out_string(p_con, " ", White);
         }
     }
     p_con->cursor = 0;
+    if (p_con == console_table + nr_current_console){
+        set_cursor(p_con->cursor);
+        set_video_start_addr(p_con->original_addr);
+    }
+}
+
+PUBLIC void sys_clear(PROCESS* p_proc)
+{
+    CONSOLE* p_con = tty_table[p_proc->nr_tty].p_console;
+    clear_screen(p_con);
 }
 
 

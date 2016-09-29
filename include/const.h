@@ -153,7 +153,7 @@
 #define AT_WINI_IRQ     14  /* at winchester */
 
 /* system call */
-#define NR_SYS_CALL     2
+#define NR_SYS_CALL     6
 
 /* 8253/8254 PIT (Programmable Interval Timer) */
 #define TIMER0         0x40     /* I/O port for timer channel 0 */
