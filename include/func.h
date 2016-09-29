@@ -8,27 +8,6 @@
 #include "process.h"
 
 
-/* lib/lib.asm */
-PUBLIC void* memocpy(void* pDst, void* pSrc, int iSize);
-PUBLIC void memoset(void* p_dst, char ch, int size);
-PUBLIC void  print(const char* pszInfo, const int color);
-PUBLIC char* strcpy(char* p_dst, char* p_src);
-PUBLIC void out_byte(u16 port, u8 value);
-PUBLIC u8 in_byte(u16 port);
-PUBLIC void disable_irq(int irq);
-PUBLIC void enable_irq(int irq);
-PUBLIC void disable_int();
-PUBLIC void enable_int();
-
-/* lib/stdlib.c */
-PUBLIC char* itoa(char * str, int num);
-PUBLIC void print_bit(int input, char color);
-PUBLIC int printf(const char* fmt, ...);
-PUBLIC char* itoa10(char* str, int num);
-PUBLIC int strlen(char* str);
-PUBLIC void clear();
-PUBLIC char keyboard_input();
-
 /* kernel/clock.c */
 PUBLIC void clock_handler(int irq);
 PUBLIC void mili_delay(int milli_sec);
@@ -45,6 +24,7 @@ PUBLIC void exception_handler(int vec_no, int err_code, int eip, int cs, int efl
 PUBLIC void spurious_irq(int irq);  
 PUBLIC u32 seg2phys(u16 seg);
 PUBLIC void put_irq_handler(int irq, irq_handler handler);
+PUBLIC void sleep(int milli_sec);
 
 /* kernel/keyboard.c */
 PUBLIC void init_keyboard();
@@ -88,4 +68,26 @@ PUBLIC void out_char(CONSOLE* p_con, char ch, int color);
 PUBLIC void out_string(CONSOLE* p_con, char* str, int color);
 PUBLIC void select_console(int nr_console);
 PUBLIC void scroll_screen(CONSOLE* p_con, int direction);
+
+/* lib/lib.asm */
+PUBLIC void* memocpy(void* pDst, void* pSrc, int iSize);
+PUBLIC void memoset(void* p_dst, char ch, int size);
+PUBLIC void  print(const char* pszInfo, const int color);
+PUBLIC char* strcpy(char* p_dst, char* p_src);
+PUBLIC void out_byte(u16 port, u8 value);
+PUBLIC u8 in_byte(u16 port);
+PUBLIC void disable_irq(int irq);
+PUBLIC void enable_irq(int irq);
+PUBLIC void disable_int();
+PUBLIC void enable_int();
+
+/* lib/stdlib.c */
+PUBLIC char* itoa(char * str, int num);
+PUBLIC void print_bit(int input, char color);
+PUBLIC int printf(const char* fmt, ...);
+PUBLIC char* itoa10(char* str, int num);
+PUBLIC int strlen(char* str);
+PUBLIC void clear();
+PUBLIC char keyboard_input();
+PUBLIC int random(int max);
 

@@ -30,7 +30,7 @@ ROOTDIR  =  .
 OBJS 	 = 	kernel/kernel.o kernel/start.o lib/lib.o kernel/global.o \
 			kernel/protect.o lib/stdlib.o kernel/main.o kernel/clock.o \
 			kernel/process.o kernel/syscall.o kernel/keyboard.o kernel/tty.o \
-			kernel/console.o 
+			kernel/console.o games/snake/snake.o
 
 HEADERS  =  include/const.h include/func.h include/global.h include/process.h \
 			include/sconst.inc include/type.h include/keyboard.h include/keymap.h \
@@ -95,6 +95,9 @@ lib/lib.o : lib/lib.asm
 	$(NASM) $(ASMKFLAGS) -o $@ $<
 
 lib/stdlib.o : lib/stdlib.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+games/snake/snake.o : games/snake/snake.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 

@@ -7,7 +7,7 @@
 #include "func.h"
 #include "global.h"
 #include "process.h"
-
+#include "../games/snake/snake.h"
 
 /*======================================================================*
                             kernel_main
@@ -117,11 +117,6 @@ void TestB()
     mili_delay(500);
     clear();
     disable_tty_output();
-    while(1){
-        char ch = keyboard_input();
-        if (ch) {
-            printf("%s", ch);
-        }
-    }
+    game_start();
 }
 

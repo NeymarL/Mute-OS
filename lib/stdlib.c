@@ -120,6 +120,12 @@ PUBLIC char keyboard_input()
     return key;
 }
 
+PUBLIC void sleep(int milli_sec)
+{
+    int t = get_ticks();
+    while(((get_ticks() - t) * 1000 / HZ) < milli_sec * TICK_BIAS) {}
+}
+
 
 /*======================================================================*
                 vsprintf
@@ -162,4 +168,7 @@ PRIVATE int vsprintf(char* buf, const char* fmt, va_list args)
     return p - buf;
 }
 
-
+PUBLIC int random(int max)
+{
+    return get_ticks() % max;
+}
