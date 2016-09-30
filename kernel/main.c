@@ -113,8 +113,9 @@ PUBLIC void init_clock()
  *======================================================================*/
 void TestB()
 {
-    printf("<Ticks %d>", get_ticks());
-    mili_delay(500);
+    mili_delay(4000);
+    printf("Game Start!");
+    mili_delay(1000);
     clear();
     disable_tty_output();
     game_start();

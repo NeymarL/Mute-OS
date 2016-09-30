@@ -1,4 +1,4 @@
-# The `boot` directory 
+# The `boot` folder
 
 Make the boot sector, load kernel to memeory and jump to protected mode.
 

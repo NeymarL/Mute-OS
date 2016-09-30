@@ -29,15 +29,23 @@ if you hava installed [qemu](http://wiki.qemu.org/Main_Page), you can run by:
 sudo make run
 ```
 
-otherwise you can use `dd` command write it to a usb disk and then use BIOS to boot it.
+otherwise use `dd` command write it to a usb disk and then use BIOS to boot it.
+
+## Applications
+
+* The Snakes Game
+    - See `games/snake` for details.
 
 
 ## Screenshot
 
-![MuteOS1](http://www.liuhe.website/images/MuteOS1.png)
+![MuteOS1](MuteOS1.png)
 
-![MuteOS2](http://www.liuhe.website/images/MuteOS2.png)
+**Snake Game**
 
+![Snake1](games/snake/snake1.png)
+
+![Snake2](games/snake/snake2.png)
 
 ## More Information
 

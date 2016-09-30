@@ -1,4 +1,4 @@
-# The `include` directory
+# The `include` folder
 
 This directory includes all of the headers kernel will use.
 
