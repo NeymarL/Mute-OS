@@ -22,7 +22,7 @@ If you do not want to run the game, just replace the code in `TestB` with a `whi
 
 ## Game Control
 
-You can use the UP arrow, the DOWN arrow, the LEFT arrow and the RIGHT arrow to control the snake's moviong direction. When you die, you can press ENTER to restart.
+You can use the UP arrow, the DOWN arrow, the LEFT arrow and the RIGHT arrow to control the snake's moviong direction. When you die, press ENTER to restart.
 
 ## Screenshot
 
