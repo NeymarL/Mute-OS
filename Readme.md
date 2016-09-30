@@ -47,7 +47,7 @@ otherwise use `dd` command write it to a usb disk and then use BIOS to boot it.
 
 ![Snake2](games/snake/snake2.png)
 
-## More Information
+## For More Information
 
 My website : https://www.liuhe.website
 

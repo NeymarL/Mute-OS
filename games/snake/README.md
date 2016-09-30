@@ -16,7 +16,7 @@ void TestB()
 }
 ```
 
-If you want to play the game, modify `TestB` that make it identify to the upper one.
+If you want to play the game, modify `TestB` that makes it identify to the upper one.
 
 If you do not want to run the game, just replace the code in `TestB` with a `while(1){}` loop.
 
@@ -26,9 +26,9 @@ You can use the UP arrow, the DOWN arrow, the LEFT arrow and the RIGHT arrow to 
 
 ## Screenshot
 
-![Snake1](games/snake/snake1.png)
+![Snake1](snake1.png)
 
-![Snake2](games/snake/snake2.png)
+![Snake2](snake2.png)
 
 
 
