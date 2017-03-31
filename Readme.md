@@ -49,6 +49,5 @@ otherwise use `dd` command write it to a usb disk and then use BIOS to boot it.
 
 ## For More Information
 
-My website : https://www.liuhe.website
-
+My website : https://www.52coding.com.cn
 
